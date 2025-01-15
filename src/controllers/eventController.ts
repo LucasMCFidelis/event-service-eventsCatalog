@@ -2,7 +2,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { eventService } from "../services/eventService.js";
 import { handleError } from "../utils/handlers/handleError.js";
 
-
 export async function createEventRoute(
   request: FastifyRequest,
   reply: FastifyReply

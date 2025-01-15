@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_EVENT")
+}
+
+enum AccessibilityLevel {
+  SEM_ACESSIBILIDADE      @map("Sem Acessibilidade")
+  ACESSIBILIDADE_BASICA   @map("Acessibilidade Básica")
+  ACESSIBILIDADE_AUDITIVA @map("Acessibilidade Auditiva")
+  ACESSIBILIDADE_VISUAL   @map("Acessibilidade Visual")
+  ACESSIBILIDADE_COMPLETA @map("Acessibilidade Completa")
+  NAO_INFORMADA           @map("Acessibilidade não informada")
+}
+
+model Event {
+  eventId             String             @id @default(uuid())
+  eventTitle               String             @db.VarChar(120)
+  eventDescription         String?            @db.VarChar(600)
+  eventLink           String?            @db.VarChar(255)
+  eventPrice               Decimal            @db.Decimal(8, 2)
+  eventAddressStreet       String             @db.VarChar(120)
+  eventAddressNumber       String             @db.VarChar(8)
+  eventAddressNeighborhood String             @db.VarChar(20)
+  eventAddressComplement   String?            @db.VarChar(30)
+  eventAccessibilityLevel  AccessibilityLevel @default(NAO_INFORMADA)
+  startDateTime       DateTime
+  endDateTime         DateTime?
+  createdAt           DateTime           @default(now())
+
+  eventOrganizerId String
+  organizer        EventOrganizer @relation(fields: [eventOrganizerId], references: [organizerId])
+
+  eventCategoryId String
+  category        EventCategory @relation(fields: [eventCategoryId], references: [categoryId])
+
+  @@map("events")
+}
+
+model EventOrganizer {
+  organizerId          String   @id @default(uuid())
+  organizerName        String   @db.VarChar(100)
+  organizerCnpj        String   @db.VarChar(18)
+  organizerEmail       String   @unique @db.VarChar(100)
+  organizerPhoneNumber String?  @db.VarChar(15)
+  createdAt            DateTime @default(now())
+
+  // Relacionamento com usuários
+  events Event[]
+
+  @@map("event_organizers")
+}
+
+model EventCategory {
+  categoryId          String   @id @default(uuid())
+  categoryName        String   @unique @db.VarChar(30)
+  categoryDescription String?  @db.VarChar(300)
+  createdAt           DateTime @default(now())
+
+  // Relacionamento com usuários
+  events Event[]
+
+  @@map("event_categories")
+}
