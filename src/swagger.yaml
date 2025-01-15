@@ -1,0 +1,197 @@
+openapi: 3.0.0
+info:
+  title: API de Gerenciamento de Eventos
+  description: Documentação da API usando Swagger
+  version: 1.0.0
+servers:
+- url: http://localhost:3333
+  description: Servidor local
+tags:
+- name: Eventos
+  description: Operações relacionadas a eventos
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          enum: ["Erro de validação","Erro no servidor","Erro Not Found","Erro de autorização","Erro de autenticação","Erro de Conflito"]
+          default: "Erro de validação"
+        message:
+          type: string
+          example: "Descrição do erro"
+    EventResponse:
+      type: object
+      properties:
+        eventId:
+          type: string
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        title:
+          type: string
+          example: "Feira de Tecnologia"
+        description:
+          type: string
+          example: "Uma feira anual para entusiastas e profissionais da tecnologia."
+        linkEvent:
+          type: string
+          example: "https://www.evento-tecnologia.com"
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+              example: "Rua da Tecnologia"
+            number:
+              type: string
+              example: "123"
+            neighborhood:
+              type: string
+              example: "Centro"
+            complement:
+              type: string
+              example: "Próximo à praça central"
+        accessibilityLevel:
+          type: string
+          enum:
+          - SEM_ACESSIBILIDADE
+          - ACESSIBILIDADE_BASICA
+          - ACESSIBILIDADE_AUDITIVA
+          - ACESSIBILIDADE_VISUAL
+          - ACESSIBILIDADE_COMPLETA
+          - NAO_INFORMADA
+          example: "ACESSIBILIDADE_BASICA"
+        startDateTime:
+          type: string
+          example: "2023-11-25T09:00:00Z"
+        endDateTime:
+          type: string
+          example: "2023-11-25T18:00:00Z"
+        createdAt:
+          type: string
+          example: "2023-10-20T12:30:45Z"
+  examples:
+    ServerErrorExample:
+      summary: "Erro interno"
+      value:
+        error: "Erro no servidor"
+        message: "Erro interno ao realizar operação"
+  responses:
+    ForbiddenErrorAdmin:
+      description: Permissão insuficiente para realizar a operação.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            access_denied:
+              summary: "Permissão insuficiente"
+              value:
+                error: "Erro de autorização"
+                message: "Permissão insuficiente. Requerido: Admin, atual: User"
+
+paths:
+  /eventos:
+    get:
+      summary: "Lista todos os eventos ordenados por título em ordem alfabética."
+      tags:
+      - Eventos
+      responses:
+        '200':
+          description: "Lista de eventos encontrada com sucesso"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: "Nenhum evento encontrado"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                no_events:
+                  summary: "Nenhum evento encontrado"
+                  value:
+                    error: "Erro Not Found"
+                    message: "Nenhum evento encontrado"
+        '500':
+          description: "Erro interno do servidor ao buscar eventos"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  $ref: '#/components/examples/ServerErrorExample'
+
+  /eventos/{id}:
+    get:
+      summary: "Recuperar um evento específico pelo ID"
+      tags:
+      - "Eventos"
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: "ID do evento a ser recuperado (formato UUID v4)."
+        schema:
+          type: string
+          example: "0457333a-bd1a-45da-86bc-4e80b72ae9ac"
+      responses:
+        '200':
+          description: "Evento recuperado com sucesso."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'
+        '400':
+          description: "Requisição inválida."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_id_empty:
+                  summary: "ID vazio"
+                  value:
+                    error: "Erro de validação"
+                    message: "O ID não pode ser vazio."
+                invalid_id_format:
+                  summary: "ID em formato inválido"
+                  value:
+                    error: "Erro de validação"
+                    message: "O ID deve estar no formato de UUID v4."
+        '404':
+          description: "Evento não encontrado."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                user_not_found:
+                  summary: "Evento não encontrado"
+                  value:
+                    error: "Erro Not Found"
+                    message: "Evento não encontrado."
+        '500':
+          description: "Erro interno do servidor ao buscar eventos"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                server_error:
+                  $ref: '#/components/examples/ServerErrorExample'
+                error_get_event:
+                  summary: "Erro interno durante a busca"
+                  value:
+                    error: "Erro no servidor"
+                    message: "Erro ao consultar o evento"
