@@ -42,3 +42,27 @@ export async function getEventOrganizerByIdRoute(
     handleError(error, reply);
   }
 }
+
+export async function deleteEventOrganizerRoute(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) {
+  try {
+    await eventOrganizerService.deleteEventOrganizer(request.params.id);
+    return reply.status(200).send({message: "Categoria excluída com sucesso"});
+  } catch (error) {
+    handleError(error, reply);
+  }
+}
+
+export async function updateEventOrganizerRoute(
+  request: FastifyRequest<{ Params: { id: string }, Body: Partial<EventOrganizer>}>,
+  reply: FastifyReply
+) {
+  try {
+    await eventOrganizerService.updateEventOrganizer(request.params.id, request.body);
+    return reply.status(200).send({message: "Categoria atualizada com sucesso"});
+  } catch (error) {
+    handleError(error, reply);
+  }
+}
