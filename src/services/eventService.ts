@@ -3,6 +3,7 @@ import { schemaEvent } from "../schemas/schemaEventCadastre.js";
 import { prisma } from "../utils/db/prisma.js";
 import { eventOrganizerService } from "./eventOrganizerService.js";
 import { eventCategoryService } from "./eventCategoryService.js";
+import { schemaId } from "../schemas/schemaId.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -71,7 +72,32 @@ async function listEvents() {
   }
 }
 
+async function getEventById(eventId: string) {
+  await schemaId.validateAsync({ id: eventId });
+
+  let event;
+  try {
+    event = await prisma.event.findUnique({ where: { eventId } });
+  } catch (error) {
+    console.error("Erro ao buscar eventos", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao buscar eventos",
+      error: "Erro no servidor",
+    };
+  }
+
+  if (!event) {
+    throw {
+      status: 404,
+      message: "Evento não encontrado",
+      error: "Erro Not Found",
+    };
+  }
+}
+
 export const eventService = {
   createEvent,
-  listEvents
+  listEvents,
+  getEventById
 };

@@ -23,3 +23,12 @@ export async function listEventsRoute(_:FastifyRequest, reply: FastifyReply) {
     return handleError(error, reply)
   }
 }
+
+export async function getEventByIdRoute(request:FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
+  try {
+    const event = await eventService.getEventById(request.params.id)
+    return reply.status(200).send(event)
+  } catch (error) {
+    handleError(error, reply)
+  }
+}
