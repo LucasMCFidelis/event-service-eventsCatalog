@@ -1,6 +1,7 @@
 import { EventOrganizer } from "@prisma/client";
 import { schemaEventOrganizer } from "../schemas/schemaEventOrganizerCadastre.js";
 import { prisma } from "../utils/db/prisma.js";
+import { schemaId } from "../schemas/schemaId.js";
 
 async function checkExistingEventOrganizer(
   organizerEmail: string,
@@ -76,7 +77,7 @@ async function listEventOrganizers() {
       error: "Erro no servidor",
     };
   }
-  
+
   if (eventOrganizers.length > 0) {
     return eventOrganizers;
   } else {
@@ -88,7 +89,36 @@ async function listEventOrganizers() {
   }
 }
 
+async function getEventOrganizerById(organizerId: string) {
+  await schemaId.validateAsync({ id: organizerId });
+
+  let eventOrganizer;
+  try {
+    eventOrganizer = await prisma.eventOrganizer.findUnique({
+      where: { organizerId },
+    });
+  } catch (error) {
+    console.error("Erro ao buscar organizador de eventos", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao buscar organizador de eventos",
+      error: "Erro no servidor",
+    };
+  }
+
+  if (!eventOrganizer){
+    throw {
+        status: 404,
+        message: "Organizador de eventos não encontrado",
+        error: "Erro Not Found"
+    }
+  }
+
+  return eventOrganizer
+}
+
 export const eventOrganizerService = {
   createEventOrganizer,
   listEventOrganizers,
+  getEventOrganizerById
 };
