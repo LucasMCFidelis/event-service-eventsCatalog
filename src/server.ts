@@ -5,6 +5,7 @@ import swaggerUi from "@fastify/swagger-ui";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "@fastify/cors";
+import { eventCategoryRoutes } from "./routes/eventCategoryRoutes.js";
 
 // Obter o diretório atual
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,7 @@ server.register(swaggerUi, {
 
 // Registrar rotas de usuários com prefixo
 server.register(eventRoutes, { prefix: "/events" });
+server.register(eventCategoryRoutes, { prefix: "/events-categories" });
 
 // Configurar a porta e host
 const PORT = Number(process.env.PORT) || 3131;
