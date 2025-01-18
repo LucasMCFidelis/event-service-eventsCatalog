@@ -1,15 +1,16 @@
 import { Event } from "@prisma/client";
 import { schemaEvent } from "../schemas/schemaEventCadastre.js";
-import { schemaId } from "../schemas/schemaId.js";
 import { prisma } from "../utils/db/prisma.js";
+import { eventOrganizerService } from "./eventOrganizerService.js";
+import { eventCategoryService } from "./eventCategoryService.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
 
   await Promise.all([
     schemaEvent.validateAsync(dataEvent),
-    schemaId.validateAsync({ id: eventOrganizerId }),
-    schemaId.validateAsync({ id: eventCategoryId }),
+    eventOrganizerService.getEventOrganizerById(eventOrganizerId),
+    eventCategoryService.getEventCategoryById(eventCategoryId),
   ]);
 
   try {
