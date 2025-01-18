@@ -14,3 +14,12 @@ export async function createEventRoute(
     return handleError(error, reply);
   }
 }
+
+export async function listEventsRoute(_:FastifyRequest, reply: FastifyReply) {
+  try {
+    const events = await eventService.listEvents()
+    return reply.status(200).send(events)
+  } catch (error) {
+    return handleError(error, reply)
+  }
+}

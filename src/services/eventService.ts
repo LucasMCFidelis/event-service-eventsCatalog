@@ -32,7 +32,7 @@ async function createEvent(data: Event) {
       },
     });
 
-    return newEvent
+    return newEvent;
   } catch (error) {
     console.error("Erro ao criar evento", error);
     throw {
@@ -43,6 +43,35 @@ async function createEvent(data: Event) {
   }
 }
 
+async function listEvents() {
+  let events;
+  try {
+    events = await prisma.event.findMany({
+      orderBy: {
+        eventTitle: "asc",
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao consultar eventos", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao consultar eventos",
+      error: "Erro no servidor",
+    };
+  }
+
+  if (events.length > 0) {
+    return events;
+  } else {
+    throw {
+      status: 404,
+      error: "Erro Not Found",
+      message: "Nenhum evento foi encontrado",
+    };
+  }
+}
+
 export const eventService = {
   createEvent,
+  listEvents
 };
