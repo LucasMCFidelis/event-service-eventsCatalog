@@ -2,6 +2,7 @@ import { Event, EventCategory } from "@prisma/client";
 import { prisma } from "../utils/db/prisma.js";
 import { schemaEventCategory } from "../schemas/schemaEventCategoryCadastre.js";
 import { schemaId } from "../schemas/schemaId.js";
+import { schemaEventCategoryUpdate } from "../schemas/schemaEventCategoryUpdate.js";
 
 async function createEventCategory(
   data: Omit<EventCategory, "eventCategoryId">
@@ -13,7 +14,7 @@ async function createEventCategory(
     categoryDescription,
   });
 
-  await checkExistingEventCategory(categoryName)
+  await checkExistingEventCategory(categoryName);
 
   try {
     const newEventCategory = await prisma.eventCategory.create({
@@ -93,13 +94,13 @@ async function listEventCategory() {
 }
 
 async function getEventCategoryById(eventCategoryId: string) {
-  await schemaId.validateAsync({id: eventCategoryId})
+  await schemaId.validateAsync({ id: eventCategoryId });
 
-  let eventCategory
+  let eventCategory;
   try {
     eventCategory = await prisma.eventCategory.findUnique({
-      where: {categoryId: eventCategoryId}
-    })
+      where: { categoryId: eventCategoryId },
+    });
   } catch (error) {
     console.error("Erro ao criar categoria de evento", error);
     throw {
@@ -113,15 +114,64 @@ async function getEventCategoryById(eventCategoryId: string) {
     throw {
       status: 404,
       message: "Categoria de evento não encontrada",
-      error: "Erro Not Found"
-    }
+      error: "Erro Not Found",
+    };
   }
 
-  return eventCategory
+  return eventCategory;
+}
+
+async function deleteEventCategory(eventCategoryId: string) {
+  await getEventCategoryById(eventCategoryId);
+
+  try {
+    await prisma.eventCategory.delete({
+      where: { categoryId: eventCategoryId },
+    });
+  } catch (error) {
+    console.error("Erro ao deletar categoria de evento", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao deletar categoria de evento",
+      error: "Erro no servidor",
+    };
+  }
+}
+
+async function updateEventCategory(
+  eventCategoryId: string,
+  data: Partial<EventCategory>
+) {
+  await getEventCategoryById(eventCategoryId);
+
+  const { categoryName, categoryDescription } = data;
+  await schemaEventCategoryUpdate.validateAsync({
+    categoryName,
+    categoryDescription,
+  });
+
+  try {
+    await prisma.eventCategory.update({
+      where: { categoryId: eventCategoryId },
+      data: {
+        ...(categoryName && { categoryName }),
+        ...(categoryDescription && { categoryDescription }),
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar categoria de evento", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao atualizar categoria de evento",
+      error: "Erro no servidor",
+    };
+  }
 }
 
 export const eventCategoryService = {
   createEventCategory,
   listEventCategory,
-  getEventCategoryById
+  getEventCategoryById,
+  deleteEventCategory,
+  updateEventCategory
 };
