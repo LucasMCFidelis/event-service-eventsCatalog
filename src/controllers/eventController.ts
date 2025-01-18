@@ -32,3 +32,21 @@ export async function getEventByIdRoute(request:FastifyRequest<{Params: {id: str
     handleError(error, reply)
   }
 }
+
+export async function deleteEventRoute(request:FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
+  try {
+    await eventService.deleteEvent(request.params.id)
+    return reply.status(201).send({message: "Evento deletado com sucesso"})
+  } catch (error) {
+    handleError(error, reply)
+  }
+}
+
+export async function updateEventRoute(request:FastifyRequest<{Params: {id: string}, Body: Partial<Event>}>, reply: FastifyReply) {
+  try {
+    await eventService.updateEvent(request.params.id, request.body)
+    return reply.status(200).send({message: "Evento atualizado com sucesso"})
+  } catch (error) {
+    handleError(error, reply)
+  }
+}

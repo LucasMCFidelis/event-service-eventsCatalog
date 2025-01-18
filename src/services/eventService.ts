@@ -4,6 +4,7 @@ import { prisma } from "../utils/db/prisma.js";
 import { eventOrganizerService } from "./eventOrganizerService.js";
 import { eventCategoryService } from "./eventCategoryService.js";
 import { schemaId } from "../schemas/schemaId.js";
+import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -96,8 +97,68 @@ async function getEventById(eventId: string) {
   }
 }
 
+async function deleteEvent(eventId: string) {
+  await getEventById(eventId);
+
+  try {
+    await prisma.event.delete({ where: { eventId } });
+  } catch (error) {
+    console.error("Erro ao deletar evento", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao deletar evento",
+      error: "Erro no servidor",
+    };
+  }
+}
+
+async function updateEvent(eventId: string, data: Partial<Event>) {
+  await Promise.all([
+    schemaEventUpdate.validateAsync(data),
+    getEventById(eventId),
+  ]);
+
+  try {
+    await prisma.event.update({
+      where: { eventId },
+      data: {
+        ...(data.eventTitle && { eventTitle: data.eventTitle }),
+        ...(data.eventDescription && {
+          eventDescription: data.eventDescription,
+        }),
+        ...(data.eventLink && { eventLink: data.eventLink }),
+        ...(data.eventPrice && { eventPrice: data.eventPrice }),
+        ...(data.eventAddressStreet && {
+          eventAddressStreet: data.eventAddressStreet,
+        }),
+        ...(data.eventAddressNumber && {
+          eventAddressNumber: data.eventAddressNumber,
+        }),
+        ...(data.eventAddressNeighborhood && {
+          eventAddressNeighborhood: data.eventAddressNeighborhood,
+        }),
+        ...(data.eventAddressComplement && {
+          eventAddressComplement: data.eventAddressComplement,
+        }),
+        ...(data.eventAccessibilityLevel && {
+          eventAccessibilityLevel: data.eventAccessibilityLevel,
+        }),
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao atualizar evento", error);
+    throw {
+      status: 500,
+      message: "Erro interno ao atualizar evento",
+      error: "Erro no servidor",
+    };
+  }
+}
+
 export const eventService = {
   createEvent,
   listEvents,
-  getEventById
+  getEventById,
+  deleteEvent,
+  updateEvent,
 };
