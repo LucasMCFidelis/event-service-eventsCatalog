@@ -9,6 +9,7 @@ export const schemaEvent = Joi.object({
     .min(3)
     .max(120)
     .messages({
+      "any.required": "Título é obrigatório",
       "string.base": "Título deve ser uma string",
       "string.empty": "Título não pode estar vazio",
       "string.min": "Título deve conter no mínimo 3 caracteres",
@@ -18,22 +19,26 @@ export const schemaEvent = Joi.object({
     .optional()
     .custom((value) => removeWhitespace(value))
     .min(3)
-    .max(120)
+    .max(600)
     .messages({
       "string.base": "Descrição deve ser uma string",
+      "string.empty": "Descrição não pode estar vazia",
+      "string.min": "Descrição deve conter no mínimo 3 caracteres",
+      "string.max": "Descrição deve conter no máximo 120 caracteres",
     }),
   eventLink: Joi.string().uri().optional().messages({
     "string.base": "O link deve ser uma string",
     "string.uri": "O link deve ser uma URL válida",
+    "string.empty": "O link não pode estar vazio",
   }),
   eventPrice: Joi.number()
     .precision(2)
-    .positive()
+    .min(0)
     .max(999999.99)
     .required()
     .messages({
       "number.base": "Preço deve ser um número válido",
-      "number.positive": "Preço deve ser maior que zero",
+      "number.min": "Preço não pode ser negativo",
       "number.max": "Preço não pode ultrapassar R$ 999.999,99",
       "number.precision": "Preço deve ter no máximo 2 casas decimais",
       "any.required": "Preço é obrigatório",
@@ -73,6 +78,7 @@ export const schemaEvent = Joi.object({
     }),
   eventAddressComplement: Joi.string().trim().optional().max(30).messages({
     "string.base": "Complemento deve ser uma string",
+    "string.empty": "Complemento não pode estar vazio",
     "string.max": "Complemento deve conter no máximo 30 caracteres",
   }),
   startDateTime: Joi.date().min("now").required().messages({

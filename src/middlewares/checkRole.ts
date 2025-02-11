@@ -17,7 +17,7 @@ export function checkRole(requiredRole: string) {
       const errorValue: ErrorResponse = "Erro de autorização";
       reply.status(403).send({
         error: errorValue,
-        message: `Permissão insuficiente. Requerido: ${requiredRole}, atual: ${userRole}`,
+        message: `Permissão insuficiente. Requerido: ${requiredRole}, atual: ${userRole}`.toLowerCase(),
       });
       return; // Retorne explicitamente
     }

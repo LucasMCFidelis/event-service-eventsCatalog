@@ -95,6 +95,8 @@ async function getEventById(eventId: string) {
       error: "Erro Not Found",
     };
   }
+
+  return event
 }
 
 async function deleteEvent(eventId: string) {
