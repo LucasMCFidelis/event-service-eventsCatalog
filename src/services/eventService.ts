@@ -5,6 +5,7 @@ import { eventOrganizerService } from "./eventOrganizerService.js";
 import { eventCategoryService } from "./eventCategoryService.js";
 import { schemaId } from "../schemas/schemaId.js";
 import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
+import { getCoordinates } from "../utils/getCoordinates.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -14,6 +15,10 @@ async function createEvent(data: Event) {
     eventOrganizerService.getEventOrganizerById(eventOrganizerId),
     eventCategoryService.getEventCategoryById(eventCategoryId),
   ]);
+
+  const fullAddress = `${dataEvent.eventAddressStreet}, ${dataEvent.eventAddressNumber}, ${dataEvent.eventAddressNeighborhood}, ${dataEvent.eventAddressComplement || ""}`;
+
+  const { latitude, longitude } = await getCoordinates(fullAddress);
 
   try {
     const newEvent = await prisma.event.create({
@@ -27,6 +32,8 @@ async function createEvent(data: Event) {
         eventAddressNeighborhood: dataEvent.eventAddressNeighborhood,
         eventAddressComplement: dataEvent.eventAddressComplement,
         eventAccessibilityLevel: dataEvent.eventAccessibilityLevel,
+        latitude, 
+        longitude,
         startDateTime: dataEvent.startDateTime,
         endDateTime: dataEvent.endDateTime,
         eventCategoryId,
@@ -96,7 +103,7 @@ async function getEventById(eventId: string) {
     };
   }
 
-  return event
+  return event;
 }
 
 async function deleteEvent(eventId: string) {
@@ -115,10 +122,18 @@ async function deleteEvent(eventId: string) {
 }
 
 async function updateEvent(eventId: string, data: Partial<Event>) {
-  await Promise.all([
-    schemaEventUpdate.validateAsync(data),
-    getEventById(eventId),
-  ]);
+  await schemaEventUpdate.validateAsync(data);
+  const event = await getEventById(eventId);
+
+  const fullAddress = `${data.eventAddressStreet}, ${data.eventAddressNumber}, ${data.eventAddressNeighborhood}, ${data.eventAddressComplement || ""}`;
+  const currentAddress = `${event.eventAddressStreet}, ${event.eventAddressNumber}, ${event.eventAddressNeighborhood}, ${event.eventAddressComplement || ""}`;
+
+  let latitude, longitude;
+  if (fullAddress !== currentAddress) {
+    const coordinates = await getCoordinates(fullAddress);
+    latitude = coordinates.latitude;
+    longitude = coordinates.longitude;
+  }
 
   try {
     await prisma.event.update({
@@ -145,6 +160,8 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
         ...(data.eventAccessibilityLevel && {
           eventAccessibilityLevel: data.eventAccessibilityLevel,
         }),
+        ...(latitude && {latitude}),
+        ...(longitude && {longitude})
       },
     });
   } catch (error) {
