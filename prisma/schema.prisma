@@ -27,6 +27,10 @@ model Event {
   eventAddressNeighborhood String             @db.VarChar(20)
   eventAddressComplement   String?            @db.VarChar(30)
   eventAccessibilityLevel  AccessibilityLevel @default(NAO_INFORMADA)
+
+  latitude                Float?
+  longitude               Float? 
+
   startDateTime       DateTime
   endDateTime         DateTime?
   createdAt           DateTime           @default(now())
