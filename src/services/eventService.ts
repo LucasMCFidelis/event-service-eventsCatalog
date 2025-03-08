@@ -6,6 +6,7 @@ import { eventCategoryService } from "./eventCategoryService.js";
 import { schemaId } from "../schemas/schemaId.js";
 import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
 import { getCoordinates } from "../utils/getCoordinates.js";
+import { formatterFullAddress } from "../utils/formatters/formatterFullAddress.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -16,7 +17,12 @@ async function createEvent(data: Event) {
     eventCategoryService.getEventCategoryById(eventCategoryId),
   ]);
 
-  const fullAddress = `${dataEvent.eventAddressStreet}, ${dataEvent.eventAddressNumber}, ${dataEvent.eventAddressNeighborhood}, ${dataEvent.eventAddressComplement || ""}`;
+  const fullAddress = formatterFullAddress({
+    street: dataEvent.eventAddressStreet,
+    number: dataEvent.eventAddressNumber,
+    neighborhood: dataEvent.eventAddressNeighborhood,
+    complement: dataEvent.eventAddressComplement,
+  });
 
   const { latitude, longitude } = await getCoordinates(fullAddress);
 
@@ -32,7 +38,7 @@ async function createEvent(data: Event) {
         eventAddressNeighborhood: dataEvent.eventAddressNeighborhood,
         eventAddressComplement: dataEvent.eventAddressComplement,
         eventAccessibilityLevel: dataEvent.eventAccessibilityLevel,
-        latitude, 
+        latitude,
         longitude,
         startDateTime: dataEvent.startDateTime,
         endDateTime: dataEvent.endDateTime,
@@ -125,8 +131,18 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
   await schemaEventUpdate.validateAsync(data);
   const event = await getEventById(eventId);
 
-  const fullAddress = `${data.eventAddressStreet}, ${data.eventAddressNumber}, ${data.eventAddressNeighborhood}, ${data.eventAddressComplement || ""}`;
-  const currentAddress = `${event.eventAddressStreet}, ${event.eventAddressNumber}, ${event.eventAddressNeighborhood}, ${event.eventAddressComplement || ""}`;
+  const fullAddress = formatterFullAddress({
+    street: data.eventAddressStreet || "",
+    number: data.eventAddressNumber || "",
+    neighborhood: data.eventAddressNeighborhood || "",
+    complement: data.eventAddressComplement,
+  });
+  const currentAddress = formatterFullAddress({
+    street: event.eventAddressStreet,
+    number: event.eventAddressNumber,
+    neighborhood: event.eventAddressNeighborhood,
+    complement: event.eventAddressComplement,
+  });
 
   let latitude, longitude;
   if (fullAddress !== currentAddress) {
@@ -160,8 +176,8 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
         ...(data.eventAccessibilityLevel && {
           eventAccessibilityLevel: data.eventAccessibilityLevel,
         }),
-        ...(latitude && {latitude}),
-        ...(longitude && {longitude})
+        ...(latitude && { latitude }),
+        ...(longitude && { longitude }),
       },
     });
   } catch (error) {
