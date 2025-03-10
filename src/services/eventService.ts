@@ -7,6 +7,7 @@ import { schemaId } from "../schemas/schemaId.js";
 import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
 import { getCoordinates } from "../utils/getCoordinates.js";
 import { formatterFullAddress } from "../utils/formatters/formatterFullAddress.js";
+import { validateCoordinatesWithMapbox } from "../utils/validateCoordinatesWithMapbox.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -25,6 +26,15 @@ async function createEvent(data: Event) {
   });
 
   const { latitude, longitude } = await getCoordinates(fullAddress);
+
+  const validatedCoordinates = await validateCoordinatesWithMapbox(latitude, longitude);
+  if (!validatedCoordinates) {
+    throw {
+      status: 400,
+      message: "As coordenadas do evento estão fora dos limites de João Pessoa.",
+      error: "Coordenadas inválidas",
+    };
+  }
 
   try {
     const newEvent = await prisma.event.create({
