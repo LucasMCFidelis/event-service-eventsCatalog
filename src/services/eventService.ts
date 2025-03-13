@@ -5,9 +5,8 @@ import { eventOrganizerService } from "./eventOrganizerService.js";
 import { eventCategoryService } from "./eventCategoryService.js";
 import { schemaId } from "../schemas/schemaId.js";
 import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
-import { getCoordinates } from "../utils/getCoordinates.js";
 import { formatterFullAddress } from "../utils/formatters/formatterFullAddress.js";
-import { validateCoordinatesWithMapbox } from "../utils/validateCoordinatesWithMapbox.js";
+import { mapService } from "./mapService.js";
 
 async function createEvent(data: Event) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
@@ -18,14 +17,14 @@ async function createEvent(data: Event) {
     eventCategoryService.getEventCategoryById(eventCategoryId),
   ]);
 
-  const { latitude, longitude } = await getCoordinates({
+  const { latitude, longitude } = await mapService.getCoordinates({
     street: dataEvent.eventAddressStreet,
     number: dataEvent.eventAddressNumber,
     neighborhood: dataEvent.eventAddressNeighborhood,
     complement: dataEvent.eventAddressComplement,
   });
 
-  const validatedCoordinates = await validateCoordinatesWithMapbox(latitude, longitude);
+  const validatedCoordinates = await mapService.validateCoordinates({latitude, longitude});
   if (!validatedCoordinates) {
     throw {
       status: 400,
@@ -156,7 +155,7 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
 
   let latitude, longitude;
   if (fullAddress !== currentAddress) {
-    const coordinates = await getCoordinates(addressObject);
+    const coordinates = await mapService.getCoordinates(addressObject);
     latitude = coordinates.latitude;
     longitude = coordinates.longitude;
   }

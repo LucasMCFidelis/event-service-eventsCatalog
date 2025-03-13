@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import cors from "@fastify/cors";
 import { eventCategoryRoutes } from "./routes/eventCategoryRoutes.js";
 import { eventOrganizerRoutes } from "./routes/eventOrganizerRoutes.js";
+import { mapHandler } from "./controllers/mapController.js";
 
 // Obter o diretório atual
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +46,7 @@ server.register(swaggerUi, {
 server.register(eventRoutes, { prefix: "/events" });
 server.register(eventCategoryRoutes, { prefix: "/events-categories" });
 server.register(eventOrganizerRoutes, {prefix: "events-organizers"})
+server.get("/map", mapHandler);
 
 // Configurar a porta e host
 const PORT = Number(process.env.PORT) || 3131;
