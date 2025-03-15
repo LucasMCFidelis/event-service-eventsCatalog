@@ -24,31 +24,14 @@ async function createEvent(data: Event) {
     complement: dataEvent.eventAddressComplement,
   });
 
-  const validatedCoordinates = await mapService.validateCoordinates({latitude, longitude});
-  if (!validatedCoordinates) {
-    throw {
-      status: 400,
-      message: "As coordenadas do evento estão fora dos limites de João Pessoa.",
-      error: "Coordenadas inválidas",
-    };
-  }
+  await mapService.validateCoordinates({latitude, longitude});
 
   try {
     const newEvent = await prisma.event.create({
       data: {
-        eventTitle: dataEvent.eventTitle,
-        eventDescription: dataEvent.eventDescription,
-        eventLink: dataEvent.eventLink,
-        eventPrice: dataEvent.eventPrice,
-        eventAddressStreet: dataEvent.eventAddressStreet,
-        eventAddressNumber: dataEvent.eventAddressNumber,
-        eventAddressNeighborhood: dataEvent.eventAddressNeighborhood,
-        eventAddressComplement: dataEvent.eventAddressComplement,
-        eventAccessibilityLevel: dataEvent.eventAccessibilityLevel,
+        ...dataEvent,
         latitude,
         longitude,
-        startDateTime: dataEvent.startDateTime,
-        endDateTime: dataEvent.endDateTime,
         eventCategoryId,
         eventOrganizerId,
       },
