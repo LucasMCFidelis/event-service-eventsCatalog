@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { Coordinates } from "../interfaces/Coordinates.js";
+import { Coordinates } from "../interfaces/coordinates.js";
 import { handleError } from "../utils/handlers/handleError.js";
 import { mapService } from "../services/mapService.js";
 
