@@ -3,11 +3,12 @@ import NodeCache from "node-cache";
 import { Coordinates } from "../interfaces/coordinates.js";
 import { Address } from "../interfaces/addressInterface.js";
 import { formatterFullAddress } from "../utils/formatters/formatterFullAddress.js";
+import { GetMapImageProps } from "../interfaces/GetMapImageProps.js";
 
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache de 1 hora
 const MAPBOX_API_KEY = process.env.MAPBOX_ACCESS_TOKEN;
 
-async function getMapImage({ latitude, longitude }: Coordinates) {
+async function getMapImage({latitude, longitude, eventPrice}: GetMapImageProps) {
   const cacheKey = `${latitude},${longitude}`;
   const cachedImage = cache.get(cacheKey);
 
@@ -17,7 +18,11 @@ async function getMapImage({ latitude, longitude }: Coordinates) {
   }
 
   console.log("🆕 Buscando no Mapbox...");
-  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+FF0000(${longitude},${latitude})/${longitude},${latitude},15/600x600?access_token=${MAPBOX_API_KEY}`;
+  const pinColor = eventPrice ? 
+  (parseFloat(eventPrice.toString()) > 0 ? "761AB3" : "1AB393") : 
+  "808080";  // Caso o eventPrice não seja informado, a cor será vermelha (FF0000)
+
+  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+${pinColor}(${longitude},${latitude})/${longitude},${latitude},15/600x600?access_token=${MAPBOX_API_KEY}`;
 
   try {
     const response = await axios.get(mapUrl, { responseType: "arraybuffer" });

@@ -1,16 +1,16 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { Coordinates } from "../interfaces/coordinates.js";
 import { handleError } from "../utils/handlers/handleError.js";
 import { mapService } from "../services/mapService.js";
+import { GetMapImageProps } from "../interfaces/GetMapImageProps.js";
 
 export async function mapHandler(
-  request: FastifyRequest<{ Querystring: Coordinates }>,
+  request: FastifyRequest<{ Querystring: GetMapImageProps }>,
   reply: FastifyReply
-) {
-  const { latitude, longitude } = request.query;
+) {  
+  const { latitude, longitude, eventPrice } = request.query;
 
   try {
-    const imageData = await mapService.getMapImage({ latitude, longitude });
+    const imageData = await mapService.getMapImage({latitude, longitude, eventPrice});
     reply.header("Content-Type", "image/png").send(imageData);
   } catch (error) {
     handleError(error, reply);
