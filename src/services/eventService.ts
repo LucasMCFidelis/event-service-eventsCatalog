@@ -24,7 +24,7 @@ async function createEvent(data: Event) {
     complement: dataEvent.eventAddressComplement,
   });
 
-  await mapService.validateCoordinates({latitude, longitude});
+  await mapService.validateCoordinates({ latitude, longitude });
 
   try {
     const newEvent = await prisma.event.create({
@@ -118,15 +118,25 @@ async function deleteEvent(eventId: string) {
 }
 
 async function updateEvent(eventId: string, data: Partial<Event>) {
-  await schemaEventUpdate.validateAsync(data);
+  const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
+
   const event = await getEventById(eventId);
+  await Promise.all([
+    schemaEventUpdate.validateAsync(dataEvent),
+    eventOrganizerId
+      ? eventOrganizerService.getEventOrganizerById(eventOrganizerId)
+      : Promise.resolve(null),
+    eventCategoryId
+      ? eventCategoryService.getEventCategoryById(eventCategoryId)
+      : Promise.resolve(null),
+  ]);
 
   const addressObject = {
     street: data.eventAddressStreet || "",
     number: data.eventAddressNumber || "",
     neighborhood: data.eventAddressNeighborhood || "",
     complement: data.eventAddressComplement,
-  }
+  };
 
   const fullAddress = formatterFullAddress(addressObject);
   const currentAddress = formatterFullAddress({
