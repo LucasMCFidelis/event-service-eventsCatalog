@@ -26,10 +26,11 @@ export const schemaEvent = Joi.object({
       "string.min": "Descrição deve conter no mínimo 3 caracteres",
       "string.max": "Descrição deve conter no máximo 600 caracteres",
     }),
-  eventLink: Joi.string().uri().optional().messages({
+  eventLink: Joi.string().uri().max(255).optional().messages({
     "string.base": "O link deve ser uma string",
     "string.uri": "O link deve ser uma URL válida",
     "string.empty": "O link não pode estar vazio",
+    "string.max": "O link deve conter no máximo 255 caracteres"
   }),
   eventPrice: Joi.number()
     .precision(2)
@@ -49,32 +50,35 @@ export const schemaEvent = Joi.object({
     .min(10)
     .max(120)
     .messages({
+      "any.required": "Rua é obrigatória",
       "string.base": "Rua deve ser uma string",
       "string.empty": "Rua não pode estar vazia",
       "string.min": "Rua deve conter no mínimo 10 caracteres",
       "string.max": "Rua deve conter no máximo 120 caracteres",
     }),
-  eventAddressNumber: Joi.string()
+    eventAddressNumber: Joi.string()
     .custom((value) => removeWhitespace(value))
     .max(8)
     .pattern(new RegExp("^[a-zA-Z0-9\\s]+$"))
     .required()
     .messages({
+      "any.required": "Número é obrigatório",
       "string.base": "Número deve ser uma string",
       "string.empty": "Número não pode estar vazio",
       "string.pattern.base": "Número aceita apenas caracteres alfanuméricos",
       "string.max": "Número deve conter no máximo 8 caracteres",
     }),
-  eventAddressNeighborhood: Joi.string()
+    eventAddressNeighborhood: Joi.string()
     .required()
     .custom((value) => removeWhitespace(value))
     .min(5)
-    .max(20)
+    .max(35)
     .messages({
+      "any.required": "Bairro é obrigatório",
       "string.base": "Bairro deve ser uma string",
       "string.empty": "Bairro não pode estar vazio",
       "string.min": "Bairro deve conter no mínimo 5 caracteres",
-      "string.max": "Bairro deve conter no máximo 20 caracteres",
+      "string.max": "Bairro deve conter no máximo 35 caracteres",
     }),
   eventAddressComplement: Joi.string().trim().optional().max(30).messages({
     "string.base": "Complemento deve ser uma string",

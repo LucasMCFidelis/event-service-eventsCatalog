@@ -24,7 +24,7 @@ model Event {
   eventPrice               Decimal            @db.Decimal(8, 2)
   eventAddressStreet       String             @db.VarChar(120)
   eventAddressNumber       String             @db.VarChar(8)
-  eventAddressNeighborhood String             @db.VarChar(20)
+  eventAddressNeighborhood String             @db.VarChar(35)
   eventAddressComplement   String?            @db.VarChar(30)
   eventAccessibilityLevel  AccessibilityLevel @default(NAO_INFORMADA)
 
