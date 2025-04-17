@@ -8,5 +8,6 @@ export function formatterFullAddress({
 }: Address): string {
   return `${street}, ${number}, ${neighborhood}${
     complement ? `, ${complement}` : ""
-  }`;
+  }, João Pessoa - PB
+  `;
 }
