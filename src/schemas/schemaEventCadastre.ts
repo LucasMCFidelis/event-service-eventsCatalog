@@ -24,7 +24,7 @@ export const schemaEvent = Joi.object({
       "string.base": "Descrição deve ser uma string",
       "string.empty": "Descrição não pode estar vazia",
       "string.min": "Descrição deve conter no mínimo 3 caracteres",
-      "string.max": "Descrição deve conter no máximo 120 caracteres",
+      "string.max": "Descrição deve conter no máximo 600 caracteres",
     }),
   eventLink: Joi.string().uri().optional().messages({
     "string.base": "O link deve ser uma string",
