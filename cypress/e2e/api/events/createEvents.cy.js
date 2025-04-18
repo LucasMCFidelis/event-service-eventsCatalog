@@ -8,33 +8,8 @@ const adminEmail = Cypress.env("ADMIN_EMAIL");
 const adminPassword = Cypress.env("ADMIN_PASSWORD");
 
 before(() => {
-  // Login Admin
-  cy.api({
-    method: "POST",
-    url: `${authServiceUrl}/login`,
-    body: {
-      userEmail: adminEmail,
-      passwordProvided: adminPassword,
-    },
-  }).then((res) => {
-    expect(res.status).to.eq(200);
-    Cypress.env("adminToken", res.body.userToken);
-  });
-
-  // Login User
-  cy.api({
-    method: "POST",
-    url: `${userServiceUrl}/users`,
-    body: {
-      firstName: faker.person.firstName(),
-      lastName: faker.person.lastName(),
-      email: faker.internet.email(),
-      password: "user@123SS",
-    },
-  }).then((res) => {
-    expect(res.status).to.eq(201);
-    Cypress.env("userToken", res.body.userToken);
-  });
+  cy.loginAsAdmin()
+    cy.createUser()
 });
 
 describe("Título", () => {
@@ -845,7 +820,7 @@ describe("Cadastro geral", () => {
         eventPrice: faker.number.int({ min: 0, max: 9999 }),
         startDateTime: faker.date.future(),
         eventAddressStreet: "Avenida Epitácio Pessoa",
-        eventAddressNumber: "1200",
+        eventAddressNumber: faker.number.int({ min: 1, max: 500 }).toString(),
         eventAddressNeighborhood: "Tambaú",
         eventCategoryId: "223decff-cca9-4990-a083-c30165607f3b",
         eventOrganizerId: "58187a40-2978-4777-80d3-05f16a12323a",
