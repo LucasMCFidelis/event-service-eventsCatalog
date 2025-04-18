@@ -44,8 +44,8 @@ export async function deleteEventRoute(request:FastifyRequest<{Params: {id: stri
 
 export async function updateEventRoute(request:FastifyRequest<{Params: {id: string}, Body: Partial<Event>}>, reply: FastifyReply) {
   try {
-    await eventService.updateEvent(request.params.id, request.body)
-    return reply.status(200).send({message: "Evento atualizado com sucesso"})
+    const updatedEvent = await eventService.updateEvent(request.params.id, request.body)
+    return reply.status(200).send({message: "Evento atualizado com sucesso", updatedEvent})
   } catch (error) {
     handleError(error, reply)
   }

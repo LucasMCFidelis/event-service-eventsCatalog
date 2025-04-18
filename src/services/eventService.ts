@@ -154,7 +154,7 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
   }
 
   try {
-    await prisma.event.update({
+    const updatedEvent = await prisma.event.update({
       where: { eventId },
       data: {
         ...(data.eventTitle && { eventTitle: data.eventTitle }),
@@ -182,6 +182,8 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
         ...(longitude && { longitude }),
       },
     });
+
+    return updatedEvent;
   } catch (error) {
     console.error("Erro ao atualizar evento", error);
     throw {
