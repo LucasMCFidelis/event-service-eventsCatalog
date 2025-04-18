@@ -6,7 +6,8 @@ export const schemaEventCategoryUpdate = Joi.object({
         (value) => removeWhitespace(value)
     ).max(30).messages({
         'string.base': 'Nome da categoria deve ser uma string',
-        'string.max': 'Nome da categoria deve conter no máximo 30 caracteres'
+        'string.max': 'Nome da categoria deve conter no máximo 30 caracteres',
+        'string.empty': 'Nome da categoria não pode estar vazio',
     }),
     categoryDescription: Joi.string().optional().custom(
         (value) => removeWhitespace(value)

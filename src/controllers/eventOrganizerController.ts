@@ -49,19 +49,29 @@ export async function deleteEventOrganizerRoute(
 ) {
   try {
     await eventOrganizerService.deleteEventOrganizer(request.params.id);
-    return reply.status(200).send({message: "Categoria excluída com sucesso"});
+    return reply
+      .status(200)
+      .send({ message: "Categoria excluída com sucesso" });
   } catch (error) {
     handleError(error, reply);
   }
 }
 
 export async function updateEventOrganizerRoute(
-  request: FastifyRequest<{ Params: { id: string }, Body: Partial<EventOrganizer>}>,
+  request: FastifyRequest<{
+    Params: { id: string };
+    Body: Partial<EventOrganizer>;
+  }>,
   reply: FastifyReply
 ) {
   try {
-    await eventOrganizerService.updateEventOrganizer(request.params.id, request.body);
-    return reply.status(200).send({message: "Categoria atualizada com sucesso"});
+    const updatedOrganizer = await eventOrganizerService.updateEventOrganizer(
+      request.params.id,
+      request.body
+    );
+    return reply
+      .status(200)
+      .send({ message: "Categoria atualizada com sucesso", updatedOrganizer });
   } catch (error) {
     handleError(error, reply);
   }

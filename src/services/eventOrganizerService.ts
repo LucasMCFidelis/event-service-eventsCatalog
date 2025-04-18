@@ -152,7 +152,7 @@ async function updateEventOrganizer(
   }
 
   try {
-    await prisma.eventOrganizer.update({
+    const updatedOrganizer = await prisma.eventOrganizer.update({
       where: { organizerId },
       data: {
         ...(organizerName && {organizerName}),
@@ -161,6 +161,8 @@ async function updateEventOrganizer(
         ...(organizerPhoneNumber && {organizerPhoneNumber}),
       }
     });
+
+    return updatedOrganizer
   } catch (error) {
     console.error("Erro ao atualizar organizador de eventos", error);
     throw {

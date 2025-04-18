@@ -149,15 +149,18 @@ async function updateEventCategory(
     categoryName,
     categoryDescription,
   });
+  categoryName && await checkExistingEventCategory(categoryName);
 
   try {
-    await prisma.eventCategory.update({
+    const updatedCategory = await prisma.eventCategory.update({
       where: { categoryId: eventCategoryId },
       data: {
         ...(categoryName && { categoryName }),
         ...(categoryDescription && { categoryDescription }),
       },
     });
+
+    return updatedCategory
   } catch (error) {
     console.error("Erro ao atualizar categoria de evento", error);
     throw {

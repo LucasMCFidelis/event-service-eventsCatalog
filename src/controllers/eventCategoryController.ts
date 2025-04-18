@@ -34,7 +34,9 @@ export async function getEventCategoryByIdRoute(
   reply: FastifyReply
 ) {
   try {
-    const eventCategory = await eventCategoryService.getEventCategoryById(request.params.id);
+    const eventCategory = await eventCategoryService.getEventCategoryById(
+      request.params.id
+    );
     return reply.status(200).send(eventCategory);
   } catch (error) {
     handleError(error, reply);
@@ -47,19 +49,29 @@ export async function deleteEventCategoryRoute(
 ) {
   try {
     await eventCategoryService.deleteEventCategory(request.params.id);
-    return reply.status(200).send({message: "Categoria excluída com sucesso"});
+    return reply
+      .status(200)
+      .send({ message: "Categoria excluída com sucesso" });
   } catch (error) {
     handleError(error, reply);
   }
 }
 
 export async function updateEventCategoryRoute(
-  request: FastifyRequest<{ Params: { id: string }, Body: Partial<EventCategory>}>,
+  request: FastifyRequest<{
+    Params: { id: string };
+    Body: Partial<EventCategory>;
+  }>,
   reply: FastifyReply
 ) {
   try {
-    await eventCategoryService.updateEventCategory(request.params.id, request.body);
-    return reply.status(200).send({message: "Categoria atualizada com sucesso"});
+    const updatedCategory = await eventCategoryService.updateEventCategory(
+      request.params.id,
+      request.body
+    );
+    return reply
+      .status(200)
+      .send({ message: "Categoria atualizada com sucesso", updatedCategory });
   } catch (error) {
     handleError(error, reply);
   }
