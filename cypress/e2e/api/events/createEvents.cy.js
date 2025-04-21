@@ -13,7 +13,7 @@ before(() => {
 });
 
 describe("Título", () => {
-  it("Deve retornar 400 quando não informar o título (campo obrigatório)", () => {
+  it("não for informado (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       eventTitle: undefined,
     }).then((res) => {
@@ -22,28 +22,28 @@ describe("Título", () => {
     });
   });
 
-  it("Deve retornar 400 quando o título for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({ eventTitle: "" }).then((res) => {
       expect(res.status).to.eq(400);
       expect(res.body.message).to.include("título não pode estar vazio");
     });
   });
 
-  it("Deve retornar 400 quando o título conter apenas espaços em branco", () => {
+  it("conter apenas espaços - Deve retornar 400", () => {
     cy.fillEventForm({ eventTitle: "     " }).then((res) => {
       expect(res.status).to.eq(400);
       expect(res.body.message).to.include("deve conter no mínimo 3 caracteres");
     });
   });
 
-  it("Deve retornar 400 quando o título tiver menos de 3 caracteres", () => {
+  it("menor que 3 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({ eventTitle: "ab" }).then((res) => {
       expect(res.status).to.eq(400);
       expect(res.body.message).to.include("deve conter no mínimo 3 caracteres");
     });
   });
 
-  it("Deve retornar 400 quando o título tiver mais de 120 caracteres", () => {
+  it("maior que 120 caracteres - Deve retornar 400", () => {
     const longTitle = "A".repeat(121);
     cy.fillEventForm({ eventTitle: longTitle }).then((res) => {
       expect(res.status).to.eq(400);
@@ -53,7 +53,7 @@ describe("Título", () => {
     });
   });
 
-  it("Deve retornar 400 quando o título for um número", () => {
+  it("um número - Deve retornar 400", () => {
     cy.fillEventForm({ eventTitle: 123456 }).then((res) => {
       expect(res.status).to.eq(400);
       expect(res.body.message).to.include("deve ser uma string");
@@ -62,7 +62,7 @@ describe("Título", () => {
 });
 
 describe("Descrição", () => {
-  it("Deve aceitar sem informar a descrição (campo opcional)", () => {
+  it("não for informada (campo opcional) - Deve ser aceito", () => {
     cy.fillEventForm({
       eventDescription: undefined,
     }).then((res) => {
@@ -71,7 +71,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 400 quando a descrição estiver vazia", () => {
+  it("estiver vazia - Deve retornar 400", () => {
     cy.fillEventForm({
       eventDescription: "",
     }).then((res) => {
@@ -80,7 +80,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 400 quando a descrição conter apenas espaços", () => {
+  it("conter apenas espaços - Deve retornar 400", () => {
     cy.fillEventForm({
       eventDescription: "     ",
     }).then((res) => {
@@ -91,7 +91,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 400 quando a descrição for um número", () => {
+  it("um número - Deve retornar 400", () => {
     cy.fillEventForm({
       eventDescription: 123456,
     }).then((res) => {
@@ -100,7 +100,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 400 quando a descrição for menor que 3 caracteres", () => {
+  it("menor que 3 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       eventDescription: "oi",
     }).then((res) => {
@@ -111,7 +111,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 400 quando a descrição for maior que 600 caracteres", () => {
+  it("maior que 600 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       eventDescription: "a".repeat(601),
     }).then((res) => {
@@ -122,7 +122,7 @@ describe("Descrição", () => {
     });
   });
 
-  it("Deve retornar 201 com uma descrição válida", () => {
+  it("válida - Deve retornar 201", () => {
     cy.fillEventForm({
       eventDescription: "Evento de teste com descrição válida.",
     }).then((res) => {
@@ -133,7 +133,7 @@ describe("Descrição", () => {
 });
 
 describe("Link", () => {
-  it("Deve aceitar sem informar o link (campo opcional)", () => {
+  it("não for informado (campo opcional) - Deve ser aceito", () => {
     cy.fillEventForm({
       eventLink: undefined,
     }).then((res) => {
@@ -142,7 +142,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 400 quando o link não for uma string", () => {
+  it("não for uma string - Deve retornar 400", () => {
     cy.fillEventForm({
       eventLink: 123456,
     }).then((res) => {
@@ -151,7 +151,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 400 quando o link for um texto que não é uma URL", () => {
+  it("não for uma URL válida - Deve retornar 400", () => {
     cy.fillEventForm({
       eventLink: "isso_nao_e_um_link",
     }).then((res) => {
@@ -160,7 +160,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 400 quando o link for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       eventLink: "",
     }).then((res) => {
@@ -169,7 +169,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 400 quando o link conter apenas espaços em branco", () => {
+  it("conter apenas espaços - Deve retornar 400", () => {
     cy.fillEventForm({
       eventLink: "     ",
     }).then((res) => {
@@ -178,7 +178,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 400 quando o link for maior que 255 caracteres", () => {
+  it("maior que 255 caracteres - Deve retornar 400", () => {
     const bigURL = `https://meusite.com/${"muito-comprido/".repeat(20)}`;
     cy.fillEventForm({
       eventLink: bigURL,
@@ -190,7 +190,7 @@ describe("Link", () => {
     });
   });
 
-  it("Deve retornar 201 com um link válido", () => {
+  it("válido - Deve retornar 201", () => {
     cy.fillEventForm({
       eventLink: "https://meuevento.com/pagina",
     }).then((res) => {
@@ -201,7 +201,7 @@ describe("Link", () => {
 });
 
 describe("Preço", () => {
-  it("Deve retornar 400 quando não informar o preço (campo obrigatório)", () => {
+  it("não for informado (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       eventPrice: undefined,
     }).then((res) => {
@@ -210,7 +210,7 @@ describe("Preço", () => {
     });
   });
 
-  it("Deve retornar 400 quando o preço for um texto", () => {
+  it("um texto - Deve retornar 400", () => {
     cy.fillEventForm({
       eventPrice: "gratuito",
     }).then((res) => {
@@ -219,7 +219,7 @@ describe("Preço", () => {
     });
   });
 
-  it("Deve retornar 400 quando o preço for negativo", () => {
+  it("negativo - Deve retornar 400", () => {
     cy.fillEventForm({
       eventPrice: -5,
     }).then((res) => {
@@ -228,7 +228,7 @@ describe("Preço", () => {
     });
   });
 
-  it('Deve retornar 400 quando o preço for uma string numérica com símbolo (ex: "R$10")', () => {
+  it('como string com símbolo (ex: "R$10") - Deve retornar 400', () => {
     cy.fillEventForm({
       eventPrice: "R$10",
     }).then((res) => {
@@ -237,7 +237,7 @@ describe("Preço", () => {
     });
   });
 
-  it("Deve aceitar preço igual a 0 (evento gratuito)", () => {
+  it("igual a 0 (evento gratuito) - Deve ser aceito", () => {
     cy.fillEventForm({
       eventPrice: 0,
     }).then((res) => {
@@ -246,7 +246,7 @@ describe("Preço", () => {
     });
   });
 
-  it("Deve aceitar um valor válido com casas decimais (ex: 15.50)", () => {
+  it("com casas decimais (ex: 15.50) - Deve ser aceito", () => {
     cy.fillEventForm({
       eventPrice: 15.5,
     }).then((res) => {
@@ -262,7 +262,7 @@ describe("Nome da rua", () => {
     eventAddressNeighborhood: "Centro",
   };
 
-  it("Deve retornar 400 quando não informar a rua (campo obrigatório)", () => {
+  it("não informado (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressStreet: undefined,
@@ -272,7 +272,7 @@ describe("Nome da rua", () => {
     });
   });
 
-  it("Deve retornar 400 quando o nome da rua for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressStreet: "",
@@ -282,7 +282,7 @@ describe("Nome da rua", () => {
     });
   });
 
-  it("Deve retornar 400 quando o nome da rua conter apenas espaços em branco", () => {
+  it("conter apenas espaços - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressStreet: "     ",
@@ -294,7 +294,7 @@ describe("Nome da rua", () => {
     });
   });
 
-  it("Deve retornar 400 quando o nome da rua for menor que 10 caracteres", () => {
+  it("menor que 10 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressStreet: "AB",
@@ -306,7 +306,7 @@ describe("Nome da rua", () => {
     });
   });
 
-  it("Deve retornar 400 quando o nome da rua for maior que 120 caracteres", () => {
+  it("maior que 120 caracteres - Deve retornar 400", () => {
     const longStreet = "Rua ".concat("A".repeat(117));
     cy.fillEventForm({
       ...enderecoValido,
@@ -319,7 +319,7 @@ describe("Nome da rua", () => {
     });
   });
 
-  it("Deve retornar 201 com um nome de rua válido", () => {
+  it("válido - Deve retornar 201", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressStreet: "Rua Professora Maria das Dores Ferreira",
@@ -336,7 +336,7 @@ describe("Número", () => {
     eventAddressNeighborhood: "Centro",
   };
 
-  it("Deve retornar 400 quando não informar o número (campo obrigatório)", () => {
+  it("não informado (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: undefined,
@@ -346,7 +346,7 @@ describe("Número", () => {
     });
   });
 
-  it("Deve retornar 400 quando o número for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: "",
@@ -356,7 +356,7 @@ describe("Número", () => {
     });
   });
 
-  it("Deve retornar 400 quando o número for negativo", () => {
+  it("negativo - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: "-100",
@@ -368,7 +368,7 @@ describe("Número", () => {
     });
   });
 
-  it("Deve retornar 400 quando o número for maior que 8 caracteres", () => {
+  it("maior que 8 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: "9".repeat(21),
@@ -380,7 +380,7 @@ describe("Número", () => {
     });
   });
 
-  it('Deve aceitar número como texto numérico (ex: "101A")', () => {
+  it('como texto numérico (ex: "101A") - Deve ser aceito', () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: "101A",
@@ -390,7 +390,7 @@ describe("Número", () => {
     });
   });
 
-  it("Deve retornar 201 com número válido", () => {
+  it("válido - Deve retornar 201", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNumber: "567",
@@ -407,7 +407,7 @@ describe("Bairro", () => {
     eventAddressNumber: "456",
   };
 
-  it("Deve retornar 400 quando não informar o bairro (campo obrigatório)", () => {
+  it("não informado (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNeighborhood: undefined,
@@ -417,7 +417,7 @@ describe("Bairro", () => {
     });
   });
 
-  it("Deve retornar 400 quando o bairro for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNeighborhood: "",
@@ -427,7 +427,7 @@ describe("Bairro", () => {
     });
   });
 
-  it("Deve retornar 400 quando o bairro conter apenas espaços", () => {
+  it("conter apenas espaços - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNeighborhood: "     ",
@@ -439,7 +439,7 @@ describe("Bairro", () => {
     });
   });
 
-  it("Deve retornar 400 quando o bairro for menor que 5 caracteres", () => {
+  it("menor que 5 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNeighborhood: "AB",
@@ -451,7 +451,7 @@ describe("Bairro", () => {
     });
   });
 
-  it("Deve retornar 400 quando o bairro for maior que 35 caracteres", () => {
+  it("maior que 35 caracteres - Deve retornar 400", () => {
     const longNeighborhood = "Bairro ".concat("X".repeat(75));
     cy.fillEventForm({
       ...enderecoValido,
@@ -464,7 +464,7 @@ describe("Bairro", () => {
     });
   });
 
-  it("Deve aceitar nomes de bairro válidos", () => {
+  it("válido - Deve ser aceito", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressNeighborhood: "Tambauzinho",
@@ -482,7 +482,7 @@ describe("Complemento", () => {
     eventAddressNeighborhood: "Manaíra",
   };
 
-  it("Deve retornar 400 quando o complemento for maior que 30 caracteres", () => {
+  it("maior que 30 caracteres - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressComplement: "Complemento muito grande: ".concat(
@@ -496,7 +496,7 @@ describe("Complemento", () => {
     });
   });
 
-  it("Deve aceitar sem informar o complemento (campo opcional)", () => {
+  it("não informado (campo opcional) - Deve ser aceito", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressComplement: undefined,
@@ -506,7 +506,7 @@ describe("Complemento", () => {
     });
   });
 
-  it("Deve retornar 400 quando o complemento for uma string vazia", () => {
+  it("como string vazia - Deve retornar 400", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressComplement: "",
@@ -516,7 +516,7 @@ describe("Complemento", () => {
     });
   });
 
-  it('Deve aceitar complemento com valor comum como "Apto 101"', () => {
+  it('com valor comum "Apto 101" - Deve ser aceito', () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressComplement: "Apto 101",
@@ -526,7 +526,7 @@ describe("Complemento", () => {
     });
   });
 
-  it("Deve aceitar complemento contendo letras, números e símbolos comuns", () => {
+  it("contendo letras, números e símbolos comuns - Deve ser aceito", () => {
     cy.fillEventForm({
       ...enderecoValido,
       eventAddressComplement: "Bloco C - Fundos",
@@ -550,7 +550,7 @@ describe("Coordenadas", () => {
     eventAddressNeighborhood: "Tambaú",
   };
 
-  it("Deve retornar 400 quando as coordenadas estiverem fora de João Pessoa", () => {
+  it("fora de João Pessoa - Deve retornar 400", () => {
     cy.fillEventForm(enderecoInvalido).then((res) => {
       expect(res.status).to.eq(400);
       expect(res.body.message.toLowerCase()).to.include(
@@ -559,7 +559,7 @@ describe("Coordenadas", () => {
     });
   });
 
-  it("Deve retornar 201 para um endereço dentro de João Pessoa", () => {
+  it("dentro de João Pessoa - Deve retornar 201", () => {
     cy.fillEventForm(enderecoValido).then((res) => {
       expect(res.status).to.eq(201);
       expect(res.body).to.have.property("eventId");
@@ -568,7 +568,7 @@ describe("Coordenadas", () => {
 });
 
 describe("Acessibilidade", () => {
-  it("Deve retornar 400 quando o nível de acessibilidade for vazio", () => {
+  it("vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: "",
     }).then((res) => {
@@ -579,7 +579,7 @@ describe("Acessibilidade", () => {
     });
   });
 
-  it("Deve aceitar quando o nível de acessibilidade não for informado (campo opcional)", () => {
+  it("não for informado (campo opcional) - Deve ser aceito", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: undefined,
     }).then((res) => {
@@ -588,7 +588,7 @@ describe("Acessibilidade", () => {
     });
   });
 
-  it("Deve retornar 400 quando o nível de acessibilidade for inválido", () => {
+  it("inválido - Deve retornar 400", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: "NIVEL_SUPER_ALTO",
     }).then((res) => {
@@ -599,7 +599,7 @@ describe("Acessibilidade", () => {
     });
   });
 
-  it("Deve aceitar o valor ACESSIBILIDADE_BASICA", () => {
+  it("ACESSIBILIDADE_BASICA - Deve ser aceito", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: "ACESSIBILIDADE_BASICA",
     }).then((res) => {
@@ -608,7 +608,7 @@ describe("Acessibilidade", () => {
     });
   });
 
-  it("Deve aceitar o valor ACESSIBILIDADE_COMPLETA", () => {
+  it("ACESSIBILIDADE_COMPLETA - Deve ser aceito", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: "ACESSIBILIDADE_COMPLETA",
     }).then((res) => {
@@ -617,7 +617,7 @@ describe("Acessibilidade", () => {
     });
   });
 
-  it("Deve aceitar o valor SEM_ACESSIBILIDADE", () => {
+  it("SEM_ACESSIBILIDADE - Deve ser aceito", () => {
     cy.fillEventForm({
       eventAccessibilityLevel: "SEM_ACESSIBILIDADE",
     }).then((res) => {
@@ -628,7 +628,7 @@ describe("Acessibilidade", () => {
 });
 
 describe("Datas", () => {
-  it("Deve retornar 400 quando não informar a data de início (campo obrigatório)", () => {
+  it("de início não informada (campo obrigatório) - Deve retornar 400", () => {
     cy.fillEventForm({
       startDateTime: undefined,
       endDateTime: faker.date.future(),
@@ -638,7 +638,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve retornar 400 quando a data de início estiver no passado", () => {
+  it("de início estiver no passado - Deve retornar 400", () => {
     const ontem = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     cy.fillEventForm({
       startDateTime: ontem,
@@ -651,7 +651,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve retornar 400 quando a data de início for inválida", () => {
+  it("de início for inválida - Deve retornar 400", () => {
     cy.fillEventForm({
       startDateTime: "data_invalida",
       endDateTime: faker.date.future(),
@@ -663,7 +663,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve retornar 400 quando a data de término for anterior à de início", () => {
+  it("de término for anterior à de início - Deve retornar 400", () => {
     const now = new Date();
     const start = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2h
     const end = new Date(now.getTime() + 1 * 60 * 60 * 1000); // +1h
@@ -679,7 +679,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve aceitar sem informar a data de término (campo opcional)", () => {
+  it("de término não informada(campo opcional) - Deve ser aceito", () => {
     cy.fillEventForm({
       endDateTime: undefined,
     }).then((res) => {
@@ -688,7 +688,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve retornar 400 quando a data de término for inválida", () => {
+  it("de término for inválida - Deve retornar 400", () => {
     cy.fillEventForm({
       endDateTime: "31-02-2025",
     }).then((res) => {
@@ -699,7 +699,7 @@ describe("Datas", () => {
     });
   });
 
-  it("Deve retornar 201 quando as datas forem válidas e coerentes", () => {
+  it("válidas e coerentes - Deve retornar 201", () => {
     const start = new Date(Date.now() + 60 * 60 * 1000); // +1h
     const end = new Date(Date.now() + 2 * 60 * 60 * 1000); // +2h
 
@@ -713,8 +713,8 @@ describe("Datas", () => {
   });
 });
 
-describe("Relacionamentos", () => {
-  it("Deve retornar 400 quando o ID da categoria for um UUID inválido", () => {
+describe("Relacionamentos - ", () => {
+  it("ID da categoria inválido - Deve retornar 400", () => {
     cy.fillEventForm({
       eventCategoryId: "categoria_invalida",
     }).then((res) => {
@@ -725,7 +725,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 400 quando o ID da categoria for vazio", () => {
+  it("ID da categoria vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       eventCategoryId: "",
     }).then((res) => {
@@ -734,7 +734,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 404 quando o ID da categoria for válido mas não existir", () => {
+  it("ID da categoria inexistente - Deve retornar 404", () => {
     cy.fillEventForm({
       eventCategoryId: "c299648b-c26c-4ff7-af78-782aba466074",
     }).then((res) => {
@@ -745,7 +745,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 400 quando o ID do organizador for um UUID inválido", () => {
+  it("ID do organizador inválido - Deve retornar 400", () => {
     cy.fillEventForm({
       eventOrganizerId: "organizador_invalido",
     }).then((res) => {
@@ -756,7 +756,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 400 quando o ID do organizador for vazio", () => {
+  it("ID do organizador vazio - Deve retornar 400", () => {
     cy.fillEventForm({
       eventOrganizerId: "",
     }).then((res) => {
@@ -765,7 +765,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 404 quando o ID do organizador for válido mas não existir", () => {
+  it("ID do organizador inexistente - Deve retornar 404", () => {
     cy.fillEventForm({
       eventOrganizerId: "c299648b-c26c-4ff7-af78-782aba466074",
     }).then((res) => {
@@ -776,7 +776,7 @@ describe("Relacionamentos", () => {
     });
   });
 
-  it("Deve retornar 201 com IDs de categoria e organizador válidos", () => {
+  it("IDs de categoria e organizador válidos - Deve retornar 201", () => {
     cy.fillEventForm({
       eventCategoryId: "223decff-cca9-4990-a083-c30165607f3b",
       eventOrganizerId: "58187a40-2978-4777-80d3-05f16a12323a",
@@ -787,15 +787,15 @@ describe("Relacionamentos", () => {
   });
 });
 
-describe("Cadastro geral", () => {
-  it("Cadastro com todos os campos", () => {
+describe("Cadastro", () => {
+  it("todos os campos - Deve retornar 201", () => {
     cy.fillEventForm().then((res) => {
       expect(res.status).to.eq(201);
       expect(res.body).to.have.property("eventId");
     });
   });
 
-  it("Cadastro com campos obrigatórios", () => {
+  it("campos obrigatórios - Deve retornar 201", () => {
     cy.fillEventForm({
       eventDescription: undefined,
       eventLink: undefined,
@@ -808,7 +808,7 @@ describe("Cadastro geral", () => {
     });
   });
 
-  it("Cadastro usando token de usuário", () => {
+  it("usando token de usuário - Deve retornar 403", () => {
     cy.api({
       method: "POST",
       url: "/events",

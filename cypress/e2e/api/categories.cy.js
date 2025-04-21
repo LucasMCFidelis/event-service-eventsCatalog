@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 import { faker } from "@faker-js/faker";
 
-describe("Categorias de Eventos", () => {
+describe("Categorias de Eventos - ", () => {
   const mockBody = {
     categoryName: faker.person.fullName(),
     categoryDescription: faker.lorem.sentence(),
@@ -12,8 +12,8 @@ describe("Categorias de Eventos", () => {
     cy.createUser();
   });
 
-  describe("Cadastrar categoria de evento", () => {
-    it("Cadastro com token de admin deve retornar 201", () => {
+  describe("Cadastrar", () => {
+    it("com token de admin - Deve retornar 201", () => {
       cy.api({
         method: "POST",
         url: "/events-categories",
@@ -28,7 +28,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Cadastro com token de usuário comum deve retornar 403", () => {
+    it("com token de usuário comum - Deve retornar 403", () => {
       cy.api({
         method: "POST",
         url: "/events-categories",
@@ -46,7 +46,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Cadastro com nome já cadastrado deve retornar 409", () => {
+    it("com nome já cadastrado - Deve retornar 409", () => {
       cy.api({
         method: "POST",
         url: "/events-categories",
@@ -65,8 +65,8 @@ describe("Categorias de Eventos", () => {
     });
   });
 
-  describe("Consultar categoria de evento", () => {
-    it("Listar categorias deve retornar 200", () => {
+  describe("Consultar", () => {
+    it("listagem de categorias - Deve retornar 200", () => {
       cy.api({
         method: "GET",
         url: "/events-categories",
@@ -75,7 +75,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Buscar categoria existente deve retornar 200", () => {
+    it("categoria existente - Deve retornar 200", () => {
       cy.api({
         method: "GET",
         url: `/events-categories/${
@@ -86,7 +86,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Buscar categoria inexistente deve retornar 404", () => {
+    it("categoria inexistente - Deve retornar 404", () => {
       cy.api({
         method: "GET",
         url: "/events-categories/58187a40-4444-4777-80d3-05f16a44423a",
@@ -100,7 +100,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Buscar categoria com ID inválido deve retornar 400", () => {
+    it("categoria com ID inválido - Deve retornar 400", () => {
       cy.api({
         method: "GET",
         url: "/events-categories/a12323a",
@@ -115,8 +115,8 @@ describe("Categorias de Eventos", () => {
     });
   });
 
-  describe("Atualizar categoria de evento", () => {
-    it("Deve retornar 409 ao editar com nome de categoria já cadastrada", () => {
+  describe("Atualizar categoria", () => {
+    it("com nome já cadastrado - Deve retornar 409", () => {
       cy.api({
         method: "PUT",
         url: `/events-categories/${
@@ -138,7 +138,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 200 ao editar nome e descrição com sucesso", () => {
+    it("com nome e descrição válidos - Deve retornar 200", () => {
       const categoryName = faker.lorem.words(3)
       cy.api({
         method: "PUT",
@@ -158,7 +158,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o nome estiver vazio", () => {
+    it("com nome vazio - Deve retornar 400 ", () => {
       cy.api({
         method: "PUT",
         url: `/events-categories/${
@@ -180,7 +180,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o nome for numérico", () => {
+    it("com nome numérico - Deve retornar 400 ", () => {
       cy.api({
         method: "PUT",
         url: `/events-categories/${
@@ -202,7 +202,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 404 ao tentar editar categoria inexistente", () => {
+    it("inexistente - Deve retornar 404", () => {
       cy.api({
         method: "PUT",
         url: "/events-categories/c8be4e1c-5930-4fbb-885c-ebb0aa6ddbcf",
@@ -222,7 +222,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o ID for inválido", () => {
+    it("ID inválido - Deve retornar 400 ", () => {
       cy.api({
         method: "PUT",
         url: "/events-categories/id-invalido",
@@ -242,7 +242,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deve retornar 403 ao tentar editar com token de usuário comum", () => {
+    it("usando token de usuário comum - Deve retornar 403", () => {
       cy.api({
         method: "PUT",
         url: `/events-categories/${
@@ -265,8 +265,8 @@ describe("Categorias de Eventos", () => {
     });
   });
 
-  describe("Deletar categoria de evento", () => {
-    it("Deletar categoria existente deve retornar 200", () => {
+  describe("Deletar categoria", () => {
+    it("existente - Deve retornar 200", () => {
       cy.api({
         method: "DELETE",
         url: `/events-categories/${
@@ -280,7 +280,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deletar categoria inexistente deve retornar 404", () => {
+    it("inexistente - Deve retornar 404", () => {
       cy.api({
         method: "DELETE",
         url: "/events-categories/c8be4e1c-5930-4fbb-885c-ebb0aa6ddbcf",
@@ -297,7 +297,7 @@ describe("Categorias de Eventos", () => {
       });
     });
 
-    it("Deletar categoria com ID inválido deve retornar 400", () => {
+    it("com ID inválido - Deve retornar 400", () => {
       cy.api({
         method: "DELETE",
         url: "/events-categories/c8be4",

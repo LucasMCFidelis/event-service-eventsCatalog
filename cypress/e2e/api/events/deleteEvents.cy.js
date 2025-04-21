@@ -20,7 +20,7 @@ describe("Deletar evento", () => {
     });
   });
 
-  it("Tentar deletar um evento usando token de usuário", () => {
+  it("usando token de usuário comum - Deve retornar 403", () => {
     cy.api({
       method: "DELETE",
       url: `/events/${eventId}`,
@@ -34,7 +34,7 @@ describe("Deletar evento", () => {
     });
   });
 
-  it("Deve retornar 201 ao deletar um evento existente", () => {
+  it("existente - Deve retornar 201", () => {
     cy.api({
       method: "DELETE",
       url: `/events/${eventId}`,
@@ -46,7 +46,7 @@ describe("Deletar evento", () => {
     });
   });
 
-  it("Deve retornar 404 ao tentar deletar um evento que já foi deletado", () => {
+  it("que já foi deletado - Deve retornar 404", () => {
     cy.api({
       method: "DELETE",
       url: `/events/${eventId}`,
@@ -62,7 +62,7 @@ describe("Deletar evento", () => {
     });
   });
 
-  it("Deve retornar 400 quando o ID for inválido", () => {
+  it("o ID for inválido", () => {
     cy.api({
       method: "DELETE",
       url: "/events/id-invalido",
@@ -78,7 +78,7 @@ describe("Deletar evento", () => {
     });
   });
 
-  it("Deve retornar 400 quando o ID não for informado", () => {
+  it("ID não informado - Deve retornar 400", () => {
     cy.api({
       method: "DELETE",
       url: "/events/",

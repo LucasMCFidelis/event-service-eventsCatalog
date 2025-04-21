@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 import { faker } from "@faker-js/faker";
 
-describe("Organizadores de Eventos", () => {
+describe("Organizadores de Eventos - ", () => {
   function formatCnpj(cnpj) {
     return cnpj.replace(
       /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
@@ -25,8 +25,8 @@ describe("Organizadores de Eventos", () => {
     cy.createUser();
   });
 
-  describe("Cadastrar organizador de evento", () => {
-    it.only("Cadastro com token de admin deve retornar 201", () => {
+  describe("Cadastrar organizador", () => {
+    it.only("usando token de admin - Deve retornar 201", () => {
       cy.api({
         method: "POST",
         url: "/events-organizers",
@@ -41,7 +41,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Cadastro com token de usuário comum deve retornar 403", () => {
+    it("usando token de usuário comum - Deve retornar 403", () => {
       cy.api({
         method: "POST",
         url: "/events-organizers",
@@ -59,7 +59,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Cadastro com CNPJ já cadastrado deve retornar 409", () => {
+    it("com CNPJ já cadastrado - Deve retornar 409", () => {
       cy.api({
         method: "POST",
         url: "/events-organizers",
@@ -78,8 +78,8 @@ describe("Organizadores de Eventos", () => {
     });
   });
 
-  describe("Consultar organizador de evento", () => {
-    it("Listar organizadores deve retornar 200", () => {
+  describe("Consultar", () => {
+    it("listagem de organizadores - Deve retornar 200", () => {
       cy.api({
         method: "GET",
         url: "/events-organizers",
@@ -88,7 +88,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Buscar organizador existente deve retornar 200", () => {
+    it("organizador existente - Deve retornar 200", () => {
       cy.api({
         method: "GET",
         url: `/events-organizers/${
@@ -99,7 +99,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Buscar organizador inexistente deve retornar 404", () => {
+    it("organizador inexistente - Deve retornar 404", () => {
       cy.api({
         method: "GET",
         url: `/events-organizers/58187a40-4444-4777-80d3-05f16a44423a`,
@@ -113,7 +113,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Buscar organizador com ID inválido deve retornar 400", () => {
+    it("organizador com ID inválido - Deve retornar 400", () => {
       cy.api({
         method: "GET",
         url: `/events-organizers/a12323a`,
@@ -128,8 +128,8 @@ describe("Organizadores de Eventos", () => {
     });
   });
 
-  describe.only("Atualizar organizador de evento", () => {
-    it("Deve retornar 409 ao editar organizador com email já cadastrado", () => {
+  describe.only("Atualizar organizador", () => {
+    it("com email já cadastrado - Deve retornar 409", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -151,7 +151,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 409 ao editar organizador com CNPJ já cadastrado", () => {
+    it("com CNPJ já cadastrado - Deve retornar 409", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -173,7 +173,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 200 ao editar nome e e-mail com sucesso", () => {
+    it("com nome e e-mail válidos - Deve retornar 200", () => {
       const organizerName = faker.company.name();
       const organizerEmail = faker.internet.email();
 
@@ -197,7 +197,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o nome for numérico", () => {
+    it("com nome numérico - Deve retornar 400 ", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -221,7 +221,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o e-mail for inválido", () => {
+    it("com e-mail inválido - Deve retornar 400", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -245,7 +245,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o CNPJ for inválido", () => {
+    it("com CNPJ inválido - Deve retornar 400", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -269,7 +269,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 404 ao tentar editar organizador inexistente", () => {
+    it("inexistente - Deve retornar 404 ", () => {
       cy.api({
         method: "PUT",
         url: "/events-organizers/f2dfeb27-6b70-44a7-9d3a-6ea0c5c044fd",
@@ -291,7 +291,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 400 quando o ID for inválido", () => {
+    it("com ID inválido - Deve retornar 400", () => {
       cy.api({
         method: "PUT",
         url: "/events-organizers/id-invalido",
@@ -313,7 +313,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deve retornar 403 ao tentar editar com token de usuário comum", () => {
+    it("usando token de usuário comum - Deve retornar 403", () => {
       cy.api({
         method: "PUT",
         url: `/events-organizers/${
@@ -338,8 +338,8 @@ describe("Organizadores de Eventos", () => {
     });
   });
 
-  describe("Deletar organizador de evento", () => {
-    it("Deletar organizador existente deve retornar 200", () => {
+  describe("Deletar organizador", () => {
+    it("existente - Deve retornar 200", () => {
       cy.api({
         method: "DELETE",
         url: `/events-organizers/${
@@ -353,7 +353,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deletar organizador inexistente deve retornar 404", () => {
+    it("inexistente - Deve retornar 404", () => {
       cy.api({
         method: "DELETE",
         url: `/events-organizers/c8be4e1c-5930-4fbb-885c-ebb0aa6ddbcf`,
@@ -370,7 +370,7 @@ describe("Organizadores de Eventos", () => {
       });
     });
 
-    it("Deletar organizador com ID inválido deve retornar 400", () => {
+    it("com ID inválido - Deve retornar 400", () => {
       cy.api({
         method: "DELETE",
         url: `/events-organizers/c8be4`,

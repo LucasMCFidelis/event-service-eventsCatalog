@@ -1,10 +1,6 @@
 /// <reference types="cypress" />
 
-import { faker } from "@faker-js/faker";
-
-const userServiceUrl = Cypress.env("USER_SERVICE_URL");
-
-describe.only("Editar evento", () => {
+describe("Editar evento", () => {
   let eventId;
 
   before(() => {
@@ -17,7 +13,7 @@ describe.only("Editar evento", () => {
     });
   });
 
-  it("Deve retornar 200 ao editar evento com dados válidos", () => {
+  it("com dados válidos - Deve retornar 200", () => {
     cy.api({
       method: "PUT",
       url: `/events/${eventId}`,
@@ -33,7 +29,7 @@ describe.only("Editar evento", () => {
     });
   });
 
-  it("Deve retornar 404 ao tentar editar evento inexistente", () => {
+  it("inexistente - Deve retornar 404", () => {
     cy.api({
       method: "PUT",
       url: "/events/58187a40-2978-4777-80d3-05f16a12323a",
@@ -52,7 +48,7 @@ describe.only("Editar evento", () => {
     });
   });
 
-  it("Deve retornar 400 ao editar com título inválido", () => {
+  it("com título inválido - Deve retornar 400", () => {
     cy.api({
       method: "PUT",
       url: `/events/${eventId}`,
