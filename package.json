@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "test": "cross-env NODE_ENV=production npx cypress run",
+    "test:open": "cross-env NODE_ENV=production npx cypress open",
     "test:dev": "cross-env NODE_ENV=development npx cypress run",
     "start": "cross-env NODE_ENV=production node dist/server.js",
     "start:dev": "cross-env NODE_ENV=development node dist/server.js",
     "dev": "cross-env NODE_ENV=development tsx --watch --no-warnings src/server.js",
-    "build": "cross-env NODE_ENV=production tsup src/server.ts --out-dir dist --dts --format esm --clean && cpy src/swagger.yaml dist/ --flat"
+    "build": "cross-env NODE_ENV=production tsup src/server.ts --out-dir dist --dts --format esm --clean && cpy src/swagger.yaml dist/ --flat",
+    "merge-reports": "tsc && node dist/generateChart.js"
   },
   "prisma": {
     "seed": "tsx src/utils/db/seed.ts"
