@@ -1,11 +1,11 @@
-import { Event, EventCategory } from "@prisma/client";
+import { EventCategory } from "@prisma/client";
 import { prisma } from "../utils/db/prisma.js";
 import { schemaEventCategory } from "../schemas/schemaEventCategoryCadastre.js";
 import { schemaId } from "../schemas/schemaId.js";
 import { schemaEventCategoryUpdate } from "../schemas/schemaEventCategoryUpdate.js";
 
 async function createEventCategory(
-  data: Omit<EventCategory, "eventCategoryId">
+  data: Omit<EventCategory, "categoryId" | "createdAt">
 ) {
   const { categoryName, categoryDescription } = data;
 

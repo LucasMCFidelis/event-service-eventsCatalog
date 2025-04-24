@@ -4,7 +4,7 @@ import { handleError } from "../utils/handlers/handleError.js";
 import { EventCategory } from "@prisma/client";
 
 export async function createEventCategoryRoute(
-  request: FastifyRequest<{ Body: Omit<EventCategory, "eventCategoryId"> }>,
+  request: FastifyRequest<{ Body: Omit<EventCategory, "categoryId" | "createdAt"> }>,
   reply: FastifyReply
 ) {
   try {
