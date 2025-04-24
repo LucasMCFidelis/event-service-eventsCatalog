@@ -14,6 +14,7 @@ interface ProcessedData {
   passed: number;
   failed: number;
   skipped: number;
+  geralEventosDurations: ScenarioData[];
 }
 
 function cleanFilePath(file: string): string {
@@ -56,7 +57,9 @@ function processSuite(
 ) {
   const describeTitle = suite.title?.trim() || "Raiz";
   const currentGroupKey = isCreateEvents
-    ? `${file}::${groupKeyPrefix ? groupKeyPrefix + " > " + describeTitle : describeTitle}`
+    ? `${file}::${
+        groupKeyPrefix ? groupKeyPrefix + " > " + describeTitle : describeTitle
+      }`
     : file;
 
   if (!datasetsByFile[currentGroupKey]) datasetsByFile[currentGroupKey] = [];
@@ -114,12 +117,45 @@ function processResults(report: any): ProcessedData {
     }
   }
 
+  // 🧮 Cálculo da média de duração dos testes de criação de eventos
+  const eventDurations: number[] = [];
+
+  Object.entries(datasetsByFile).forEach(([key, scenarios]) => {
+    const [filePath] = key.split("::");
+    const cleanedPath = cleanFilePath(filePath);
+    if (cleanedPath.includes("events/")) {
+      scenarios.forEach((s) => eventDurations.push(s.duration));
+    }
+  });
+
+  if (eventDurations.length > 0) {
+    const total = eventDurations.reduce((acc, curr) => acc + curr, 0);
+    const media = total / eventDurations.length;
+    console.log(
+      `📊 Média de duração dos testes na pasta 'events/': ${media.toFixed(2)}ms`
+    );
+  } else {
+    console.log(
+      "⚠️ Nenhum teste encontrado na pasta 'events/' para cálculo da média."
+    );
+  }
+  const geralEventosDurations: ScenarioData[] = [];
+
+  Object.entries(datasetsByFile).forEach(([key, scenarios]) => {
+    const [filePath] = key.split("::");
+    const cleanedPath = cleanFilePath(filePath);
+    if (cleanedPath.includes("events/")) {
+      scenarios.forEach((s) => geralEventosDurations.push(s));
+    }
+  });
+
   return {
     testsByFile,
     datasetsByFile,
     passed: counters.passed,
     failed: counters.failed,
     skipped: counters.skipped,
+    geralEventosDurations,
   };
 }
 
@@ -129,7 +165,13 @@ function generateChartJS({
   passed,
   failed,
   skipped,
+  geralEventosDurations,
 }: ProcessedData): string {
+  const geralLabels = geralEventosDurations.map((s) =>
+    breakLine(s.name.split(" - ")[0])
+  );
+  const geralData = geralEventosDurations.map((s) => s.duration);
+
   const labelsFile = Object.keys(testsByFile)
     .map((file) => `"${cleanFilePath(file)}"`)
     .join(", ");
@@ -177,7 +219,11 @@ function generateChartJS({
           plugins: {
             title: {
               display: true,
-              text: '${describe ? `Arquivo: ${cleanedFile} | Describe: ${cleanedDescribe}` : `Arquivo: ${cleanedFile}`}'
+              text: '${
+                describe
+                  ? `Arquivo: ${cleanedFile} | Describe: ${cleanedDescribe}`
+                  : `Arquivo: ${cleanedFile}`
+              }'
             },
             tooltip: {
               callbacks: {
@@ -229,6 +275,44 @@ function generateChartJS({
       indexAxis: 'y'
     }
   });
+
+  // Gráfico de Linha Geral - Duração dos testes da pasta events/
+new Chart(document.getElementById('chartLineGeralEventos'), {
+  type: 'line',
+  data: {
+    labels: ${JSON.stringify(geralLabels)},
+    datasets: [{
+      label: 'Duração por cenário (ms) - Geral (events/)',
+      data: ${JSON.stringify(geralData)},
+      borderColor: '#3b82f6',
+      tension: 0.3,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      fill: false
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: 'Geral - Duração dos testes da pasta events/'
+      }
+    },
+    scales: {
+      x: {
+        ticks: {
+          display: false, 
+          autoSkip: false,
+          maxRotation: 60,
+          minRotation: 60
+        }
+      }
+    }
+  }
+});
+
 
   // Canvases para os gráficos de linha
   document.getElementById('chartsByFile').innerHTML = \`${canvasElements}\`;
