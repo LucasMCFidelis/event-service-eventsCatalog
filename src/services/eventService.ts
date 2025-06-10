@@ -1,4 +1,4 @@
-import { Event } from "@prisma/client";
+import { AccessibilityLevel, Event } from "@prisma/client";
 import { schemaEvent } from "../schemas/schemaEventCadastre.js";
 import { prisma } from "../utils/db/prisma.js";
 import { eventOrganizerService } from "./eventOrganizerService.js";
@@ -30,6 +30,7 @@ async function createEvent(data: Event) {
     const newEvent = await prisma.event.create({
       data: {
         ...dataEvent,
+        eventAccessibilityLevel: dataEvent.eventAccessibilityLevel || AccessibilityLevel.NAO_INFORMADA,
         latitude,
         longitude,
         eventCategoryId,

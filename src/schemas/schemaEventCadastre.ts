@@ -30,7 +30,7 @@ export const schemaEvent = Joi.object({
     "string.base": "O link deve ser uma string",
     "string.uri": "O link deve ser uma URL válida",
     "string.empty": "O link não pode estar vazio",
-    "string.max": "O link deve conter no máximo 255 caracteres"
+    "string.max": "O link deve conter no máximo 255 caracteres",
   }),
   eventPrice: Joi.number()
     .precision(2)
@@ -56,7 +56,7 @@ export const schemaEvent = Joi.object({
       "string.min": "Rua deve conter no mínimo 10 caracteres",
       "string.max": "Rua deve conter no máximo 120 caracteres",
     }),
-    eventAddressNumber: Joi.string()
+  eventAddressNumber: Joi.string()
     .custom((value) => removeWhitespace(value))
     .max(8)
     .pattern(new RegExp("^[a-zA-Z0-9\\s]+$"))
@@ -68,7 +68,7 @@ export const schemaEvent = Joi.object({
       "string.pattern.base": "Número aceita apenas caracteres alfanuméricos",
       "string.max": "Número deve conter no máximo 8 caracteres",
     }),
-    eventAddressNeighborhood: Joi.string()
+  eventAddressNeighborhood: Joi.string()
     .required()
     .custom((value) => removeWhitespace(value))
     .min(5)
@@ -99,6 +99,7 @@ export const schemaEvent = Joi.object({
     }),
   eventAccessibilityLevel: Joi.string()
     .valid(...Object.values(AccessibilityLevel))
+    .allow("")
     .optional()
     .messages({
       "any.only": "Nível de acessibilidade inválido",
