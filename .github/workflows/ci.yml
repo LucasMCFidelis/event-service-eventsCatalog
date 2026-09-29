@@ -1,0 +1,53 @@
+name: EventService CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout eventService
+      - name: Checkout eventService
+        uses: actions/checkout@v4
+
+      # 2️⃣ Subir ambiente de teste
+      - name: Setup Ambiente
+        run: |
+          docker compose --profile test up -d --build --scale tests=0
+
+      # 3️⃣ Executar testes Postman/Newman
+      - name: Run Newman Tests
+        run: |
+          docker compose --profile test run --rm tests
+      
+      # 4️⃣ Salvar logs do compose em caso de falha
+      - name: Collect compose logs
+        if: failure()
+        run: docker compose --profile test logs --no-color > compose-test.log
+
+      - name: Save compose logs (test)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-logs-test
+          path: compose-test.log
+
+      # 5️⃣ Parar e remover containers
+      - name: Stop and remove containers
+        if: always()
+        run: |
+          docker compose --profile test down -v
+
+      # 6️⃣ Salvar relatório
+      - name: Save report html to artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-newman
+          path: reports/relatorio.html
+          if-no-files-found: warn
