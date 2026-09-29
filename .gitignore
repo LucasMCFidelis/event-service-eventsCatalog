@@ -32,8 +32,8 @@ Thumbs.db
 
 # Arquivos de ambiente
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # Cobertura de testes
 coverage/
@@ -75,6 +75,7 @@ report/
 *.run.xml
 *.bcf
 *.d.ts
+!fastify.d.ts
 
 # Bower
 bower_components/
@@ -95,6 +96,3 @@ bower_components/
 
 # Arquivos de cache de texto simples
 *.cache
-
-/cypress/screenshots
-/cypress/reports
