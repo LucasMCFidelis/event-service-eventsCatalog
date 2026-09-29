@@ -1,0 +1,127 @@
+name: event-service
+
+# Modos (via profiles):
+#   test: docker compose --profile test up -d --build
+#
+# Convenção (igual nos 4 repos): app-* e db-* = ESTE serviço; o resto = dependências.
+# Todo serviço/mock responde pelo mesmo hostname em qualquer modo
+# (event-service, user-service, auth-service, email-service). Porta interna de todos: 8080.
+
+x-postgres: &postgres
+  image: postgres:15-alpine
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+    interval: 5s
+    timeout: 3s
+    retries: 10
+
+x-own-db-env: &own-db-env
+  POSTGRES_DB: ${DB_NAME:-event_test}
+  POSTGRES_USER: ${DB_USER:-test}
+  POSTGRES_PASSWORD: ${DB_PASSWORD:-test}
+
+x-app-env: &app-env
+  DATABASE_URL_EVENT: postgresql://${DB_USER:-test}:${DB_PASSWORD:-test}@event-db:5432/${DB_NAME:-event_test}
+  AUTH_SERVICE_URL_DEV: http://auth-service:8080/auth
+  USER_SERVICE_URL_DEV: http://user-service:8080/users
+
+x-seed-env: &seed-env
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+  ADMIN_DATA: ${ADMIN_DATA:-}
+  USER_ROLES: ${USER_ROLES:-}
+
+services:
+  # ============================ TEST ============================
+  # event-service REAL (mesma imagem de prod) + banco descartável.
+  # authService/userService = WireMock. Testes = Newman (coleção em outro repo).
+  db-test:
+    <<: *postgres
+    profiles: [test]
+    environment: *own-db-env
+    tmpfs: [/var/lib/postgresql/data]
+    networks:
+      default:
+        aliases: [event-db]
+
+  migrate-test:
+    profiles: [test]
+    build:
+      context: .
+      target: migrate
+    environment:
+      <<: [*app-env, *seed-env]
+    depends_on:
+      db-test: { condition: service_healthy }
+
+  app-test:
+    profiles: [test]
+    build:
+      context: .
+      target: prod
+    environment:
+      <<: *app-env
+      NODE_ENV: development
+      ACTIVE_MOCK: "true"
+      START_SCRIPT: "start:dev"
+    ports: ["8084:8080"]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('net').connect(8080, '127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+    depends_on:
+      migrate-test: { condition: service_completed_successfully }
+      auth-service-mock: { condition: service_started }
+      user-service-mock: { condition: service_started }
+    networks:
+      default:
+        aliases: [event-service]
+
+  auth-service-mock:
+    profiles: [test]
+    build:
+      context: ${AUTH_MOCK_GIT:-https://github.com/LucasMCFidelis/collectionTestApiAuthService.git#main}
+      dockerfile: docker/mock.Dockerfile
+    ports: ["8082:8080"]
+    networks:
+      default:
+        aliases: [auth-service]
+
+  user-service-mock:
+    profiles: [test]
+    build:
+      context: ${USER_MOCK_GIT:-https://github.com/LucasMCFidelis/collectionTestApiUserService.git#main}
+      dockerfile: docker/mock.Dockerfile
+    ports: ["8081:8080"]
+    networks:
+      default:
+        aliases: [user-service]
+
+  tests:
+    profiles: [test]
+    build:
+      context: ${API_TESTS_GIT:-https://github.com/LucasMCFidelis/collectionTestApiEventService.git#main}
+      dockerfile: docker/tests-runner.Dockerfile
+    command:
+      - run
+      - postman/collections/event-service.postman_collection.json
+      - -e
+      - postman/environments/ci.environment.json
+      - -r
+      - cli,htmlextra
+      - --reporter-htmlextra-export
+      - reports/relatorio.html
+    volumes:
+      - ./reports:/etc/newman/reports
+    depends_on:
+      app-test: { condition: service_healthy }
+
+volumes:
+  event-db-data:
