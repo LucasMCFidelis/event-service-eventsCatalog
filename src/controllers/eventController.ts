@@ -50,8 +50,15 @@ export async function deleteEventRoute(request:FastifyRequest<{Params: {id: stri
 }
 
 export async function updateEventRoute(request:FastifyRequest<{Params: {id: string}, Body: Partial<Event>}>, reply: FastifyReply) {
+  const scenarioHeader = request.headers["x-mock-mapbox-scenario"];
+
+  const scenario =
+    process.env.ACTIVE_MOCK === "true" && typeof scenarioHeader === "string"
+      ? scenarioHeader
+      : undefined;
+
   try {
-    const updatedEvent = await eventService.updateEvent(request.params.id, request.body)
+    const updatedEvent = await eventService.updateEvent(request.params.id, request.body, scenario)
     return reply.status(200).send({message: "Evento atualizado com sucesso", updatedEvent})
   } catch (error) {
     handleError(error, reply)

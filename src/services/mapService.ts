@@ -9,7 +9,7 @@ const cache = new NodeCache({ stdTTL: 3600 }); // Cache de 1 hora
 const MAPBOX_API_KEY = process.env.MAPBOX_ACCESS_TOKEN;
 const MAPBOX_API_URL = process.env.MAPBOX_API_URL;
 
-async function getMapImage({ latitude, longitude, eventPrice }: GetMapImageProps) {
+async function getMapImage({ latitude, longitude, eventPrice }: GetMapImageProps, scenario?: string) {
   const cacheKey = `${latitude},${longitude}`;
   const cachedImage = cache.get(cacheKey);
 
@@ -26,7 +26,16 @@ async function getMapImage({ latitude, longitude, eventPrice }: GetMapImageProps
   const mapUrl = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/static/pin-l+${pinColor}(${longitude},${latitude})/${longitude},${latitude},15/600x600?access_token=${MAPBOX_API_KEY}`;
 
   try {
-    const response = await axios.get(mapUrl, { responseType: "arraybuffer" });
+    const response = await axios.get(
+      mapUrl,
+      {
+        responseType: "arraybuffer",
+        ...(scenario && {
+          headers: {
+            "x-mock-scenario": scenario,
+          },
+        })
+      });
 
     // Armazena no cache
     cache.set(cacheKey, response.data);

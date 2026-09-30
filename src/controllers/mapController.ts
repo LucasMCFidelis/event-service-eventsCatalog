@@ -8,9 +8,16 @@ export async function mapHandler(
   reply: FastifyReply
 ) {  
   const { latitude, longitude, eventPrice } = request.query;
+  const scenarioHeader = request.headers["x-mock-mapbox-scenario"];
+
+  const scenario =
+    process.env.ACTIVE_MOCK === "true" && typeof scenarioHeader === "string"
+      ? scenarioHeader
+      : undefined;
+
 
   try {
-    const imageData = await mapService.getMapImage({latitude, longitude, eventPrice});
+    const imageData = await mapService.getMapImage({latitude, longitude, eventPrice}, scenario);
     reply.header("Content-Type", "image/png").send(imageData);
   } catch (error) {
     handleError(error, reply);

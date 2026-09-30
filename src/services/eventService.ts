@@ -118,7 +118,7 @@ async function deleteEvent(eventId: string) {
   }
 }
 
-async function updateEvent(eventId: string, data: Partial<Event>) {
+async function updateEvent(eventId: string, data: Partial<Event>, scenario?: string) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
 
   const event = await getEventById(eventId);
@@ -149,7 +149,7 @@ async function updateEvent(eventId: string, data: Partial<Event>) {
 
   let latitude, longitude;
   if (fullAddress !== currentAddress) {
-    const coordinates = await mapService.getCoordinates(addressObject);
+    const coordinates = await mapService.getCoordinates(addressObject, scenario);
     latitude = coordinates.latitude;
     longitude = coordinates.longitude;
   }
