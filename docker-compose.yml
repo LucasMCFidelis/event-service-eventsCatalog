@@ -122,7 +122,7 @@ services:
       dockerfile: docker/tests-runner.Dockerfile
     command:
       - run
-      - postman/collections/event-service.postman_collection.json
+      - postman/collections/events-service.postman_collection.json
       - -e
       - postman/environments/ci.environment.json
       - -r
