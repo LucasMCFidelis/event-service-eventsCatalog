@@ -8,7 +8,7 @@ import { schemaEventUpdate } from "../schemas/schemaEventUpdate.js";
 import { formatterFullAddress } from "../utils/formatters/formatterFullAddress.js";
 import { mapService } from "./mapService.js";
 
-async function createEvent(data: Event) {
+async function createEvent(data: Event, scenario?: string) {
   const { eventOrganizerId, eventCategoryId, ...dataEvent } = data;
 
   await Promise.all([
@@ -22,9 +22,9 @@ async function createEvent(data: Event) {
     number: dataEvent.eventAddressNumber,
     neighborhood: dataEvent.eventAddressNeighborhood,
     complement: dataEvent.eventAddressComplement,
-  });
+  }, scenario);
 
-  await mapService.validateCoordinates({ latitude, longitude });
+  await mapService.validateCoordinates({ latitude, longitude }, scenario);
 
   try {
     const newEvent = await prisma.event.create({

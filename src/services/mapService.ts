@@ -7,8 +7,9 @@ import { GetMapImageProps } from "../interfaces/GetMapImageProps.js";
 
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache de 1 hora
 const MAPBOX_API_KEY = process.env.MAPBOX_ACCESS_TOKEN;
+const MAPBOX_API_URL = process.env.MAPBOX_API_URL;
 
-async function getMapImage({latitude, longitude, eventPrice}: GetMapImageProps) {
+async function getMapImage({ latitude, longitude, eventPrice }: GetMapImageProps) {
   const cacheKey = `${latitude},${longitude}`;
   const cachedImage = cache.get(cacheKey);
 
@@ -18,11 +19,11 @@ async function getMapImage({latitude, longitude, eventPrice}: GetMapImageProps) 
   }
 
   console.log("🆕 Buscando no Mapbox...");
-  const pinColor = eventPrice ? 
-  (parseFloat(eventPrice.toString()) > 0 ? "761AB3" : "1AB393") : 
-  "808080";  // Caso o eventPrice não seja informado, a cor será vermelha (FF0000)
+  const pinColor = eventPrice ?
+    (parseFloat(eventPrice.toString()) > 0 ? "761AB3" : "1AB393") :
+    "808080";  // Caso o eventPrice não seja informado, a cor será vermelha (FF0000)
 
-  const mapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+${pinColor}(${longitude},${latitude})/${longitude},${latitude},15/600x600?access_token=${MAPBOX_API_KEY}`;
+  const mapUrl = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/static/pin-l+${pinColor}(${longitude},${latitude})/${longitude},${latitude},15/600x600?access_token=${MAPBOX_API_KEY}`;
 
   try {
     const response = await axios.get(mapUrl, { responseType: "arraybuffer" });
@@ -40,7 +41,7 @@ async function getCoordinates({
   number,
   neighborhood,
   complement,
-}: Address) {
+}: Address, scenario?: string) {
   const fullAddress = formatterFullAddress({
     street,
     number,
@@ -48,11 +49,17 @@ async function getCoordinates({
     complement,
   });
 
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+  const url = `${MAPBOX_API_URL}/geocoding/v5/mapbox.places/${encodeURIComponent(
     fullAddress
   )}.json?access_token=${MAPBOX_API_KEY}`;
 
-  const response = await axios.get(url);
+  const response = await axios.get(
+    url,
+    scenario ? {
+      headers: {
+        "x-mock-scenario": scenario,
+      },
+    } : {});
   const [longitude, latitude] = response.data.features[0]?.center || [
     null,
     null,
@@ -64,13 +71,19 @@ async function getCoordinates({
 async function validateCoordinates({
   latitude,
   longitude,
-}: Coordinates): Promise<boolean> {
+}: Coordinates, scenario?: string): Promise<boolean> {
   let reverseResponse
   try {
     // Reverso geocoding para obter o nome do lugar
-    const reverseUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_API_KEY}`;
+    const reverseUrl = `${MAPBOX_API_URL}/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_API_KEY}`;
 
-    reverseResponse = await axios.get(reverseUrl);
+    reverseResponse = await axios.get(
+      reverseUrl,
+      scenario ? {
+        headers: {
+          "x-mock-scenario": scenario,
+        },
+      } : {});
   } catch (error) {
     console.error("Erro ao validar coordenadas com Mapbox:", error);
     throw {
@@ -87,8 +100,6 @@ async function validateCoordinates({
   if (placeName && placeName.toLowerCase().includes("joão pessoa")) {
     return true; // Coordenada está dentro de João Pessoa
   } else {
-    console.log('aqui ó');
-    
     throw {
       status: 400,
       message: "As coordenadas do evento estão fora dos limites de João Pessoa.",

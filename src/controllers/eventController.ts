@@ -7,8 +7,15 @@ export async function createEventRoute(
   request: FastifyRequest<{ Body: Event }>,
   reply: FastifyReply
 ) {
+  const scenarioHeader = request.headers["x-mock-mapbox-scenario"];
+
+  const scenario =
+    process.env.ACTIVE_MOCK === "true" && typeof scenarioHeader === "string"
+      ? scenarioHeader
+      : undefined;
+
   try {
-    const event = await eventService.createEvent(request.body);
+    const event = await eventService.createEvent(request.body, scenario);
     return reply.status(201).send(event);
   } catch (error) {
     return handleError(error, reply);

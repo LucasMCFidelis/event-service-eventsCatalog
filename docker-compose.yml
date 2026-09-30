@@ -24,6 +24,7 @@ x-app-env: &app-env
   DATABASE_URL_EVENT: postgresql://${DB_USER:-test}:${DB_PASSWORD:-test}@event-db:5432/${DB_NAME:-event_test}
   AUTH_SERVICE_URL_DEV: http://auth-service:8080/auth
   USER_SERVICE_URL_DEV: http://user-service:8080/users
+  MAPBOX_API_URL: ${MAPBOX_API_URL:-http://mapbox-mock:8080}
 
 x-seed-env: &seed-env
   ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
@@ -83,6 +84,16 @@ services:
     networks:
       default:
         aliases: [event-service]
+
+  mapbox-mock:
+    profiles: [test]
+    build:
+      context: ${MAPBOX_MOCK_GIT:-https://github.com/LucasMCFidelis/collectionTestApiEventService.git#main}
+      dockerfile: docker/mock-mapbox.Dockerfile
+    ports: ["8085:8080"]
+    networks:
+      default:
+        aliases: [mapbox-service]
 
   auth-service-mock:
     profiles: [test]
